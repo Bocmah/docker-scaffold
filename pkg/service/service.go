@@ -6,7 +6,10 @@ type PHP struct {
 }
 
 type Nginx struct {
-	Srvname string
+	Port               int
+	ServerName         string
+	FastCGIPassPort    int
+	FastCGIReadTimeout int
 }
 
 type NodeJS struct {
