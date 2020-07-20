@@ -1,5 +1,7 @@
 package service
 
+import "fmt"
+
 type NodeJS struct {
 	Version string
 }
@@ -10,7 +12,7 @@ func (n *NodeJS) FillDefaultsIfNotSet() {
 	}
 }
 
-func (n *NodeJS) Validate() *ValidationErrors {
+func (n *NodeJS) Validate() error {
 	errors := &ValidationErrors{}
 
 	if n.Version == "" {
@@ -22,5 +24,9 @@ func (n *NodeJS) Validate() *ValidationErrors {
 	}
 
 	return errors
+}
+
+func (n *NodeJS) String() string {
+	return fmt.Sprintf("NodeJS{Version: %s}", n.Version)
 }
 

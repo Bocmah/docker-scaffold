@@ -34,7 +34,7 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 				"nginx FastCGI pass port is required",
 				"nginx FastCGI read timeout is required",
 			},
-			actualErrs: *errs,
+			actualErrs: errs,
 			validatedVal: nginx,
 		}
 

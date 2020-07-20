@@ -29,7 +29,7 @@ func TestNodeJS_ValidateIncorrectInput(t *testing.T) {
 			wantErrs: []string{
 				"Node.js version is required",
 			},
-			actualErrs: *errs,
+			actualErrs: errs,
 			validatedVal: nodejs,
 		}
 

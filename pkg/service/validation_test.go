@@ -51,3 +51,14 @@ func TestIsEmpty(t *testing.T) {
 		t.Errorf("Failed to validate that non empty ValidationErrors is actually non empty")
 	}
 }
+
+func TestMerge(t *testing.T) {
+	got := &service.ValidationErrors{"Error 1"}
+
+	got.Merge(&service.ValidationErrors{"Error 2"})
+	want := service.ValidationErrors{"Error 1", "Error 2"}
+
+	if !equal(*got, want) {
+		t.Errorf("Incorrect merge. Want %v. Got %v", want, got)
+	}
+}

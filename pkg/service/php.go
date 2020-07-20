@@ -1,5 +1,7 @@
 package service
 
+import "fmt"
+
 type PHP struct {
 	Version    string
 	Extensions []string
@@ -24,7 +26,7 @@ func (p *PHP) AddDatabaseExtension(db SupportedSystem) {
 	}
 }
 
-func (p *PHP) Validate() *ValidationErrors {
+func (p *PHP) Validate() error {
 	errors := &ValidationErrors{}
 
 	if p.Version == "" {
@@ -36,4 +38,8 @@ func (p *PHP) Validate() *ValidationErrors {
 	}
 
 	return errors
+}
+
+func (p *PHP) String() string {
+	return fmt.Sprintf("PHP{Version: %s, Extensions: %v}", p.Version, p.Extensions)
 }

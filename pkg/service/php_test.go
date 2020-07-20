@@ -63,7 +63,7 @@ func TestPHP_ValidateIncorrectInput(t *testing.T) {
 	if errs != nil {
 		res := validationResult{
 			wantErrs: []string{"PHP version is required"},
-			actualErrs: *errs,
+			actualErrs: errs,
 			validatedVal: php,
 		}
 

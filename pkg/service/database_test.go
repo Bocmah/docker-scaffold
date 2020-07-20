@@ -2,26 +2,28 @@ package service_test
 
 import (
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"strings"
 	"testing"
 )
 
 type validationResult struct {
 	wantErrs     []string
-	actualErrs   service.ValidationErrors
+	actualErrs   error
 	validatedVal interface{}
 }
 
 func failTestOnUnspottedError(result validationResult, t *testing.T) {
 	for _, e := range result.wantErrs {
-		if !result.actualErrs.Has(e) {
+		if !strings.Contains(result.actualErrs.Error(), e) {
 			t.Errorf("Failed to spot error %s in value %v", e, result.validatedVal)
+
 		}
 	}
 }
 
-func failTestOnErrorsOnCorrectInput(errs *service.ValidationErrors, t *testing.T) {
+func failTestOnErrorsOnCorrectInput(errs error, t *testing.T) {
 	if errs != nil {
-		t.Errorf("Following errors were returned despite correct inputs %v", *errs)
+		t.Errorf("Following errors were returned despite correct inputs %v", errs)
 	}
 }
 
@@ -54,7 +56,7 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 				"Database port is required",
 				"Database root password is required",
 			},
-			actualErrs: *errs,
+			actualErrs: errs,
 			validatedVal: db,
 		}
 

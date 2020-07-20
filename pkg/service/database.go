@@ -1,5 +1,7 @@
 package service
 
+import "fmt"
+
 type SupportedSystem string
 
 const (
@@ -51,7 +53,7 @@ func (d *Database) FillDefaultsIfNotSet() {
 	}
 }
 
-func (d *Database) Validate() *ValidationErrors {
+func (d *Database) Validate() error {
 	errors := &ValidationErrors{}
 
 	if d.System != MySQL && d.System != PostgreSQL {
@@ -75,4 +77,17 @@ func (d *Database) Validate() *ValidationErrors {
 	}
 
 	return errors
+}
+
+func (d *Database) String() string {
+	return fmt.Sprintf(
+		"Database{System: %v, Version: %s, Name: %s, Port: %d, Username: %s, Password: %s, RootPassword: %s}",
+		d.System,
+		d.Version,
+		d.Name,
+		d.Port,
+		d.Username,
+		d.Password,
+		d.RootPassword,
+		)
 }

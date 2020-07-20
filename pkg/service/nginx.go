@@ -1,5 +1,7 @@
 package service
 
+import "fmt"
+
 type Nginx struct {
 	Port               int
 	ServerName         string `yaml:"serverName"`
@@ -21,7 +23,7 @@ func (n *Nginx) FillDefaultsIfNotSet() {
 	}
 }
 
-func (n *Nginx) Validate() *ValidationErrors {
+func (n *Nginx) Validate() error {
 	errors := &ValidationErrors{}
 
 	if n.Port == 0 {
@@ -45,4 +47,14 @@ func (n *Nginx) Validate() *ValidationErrors {
 	}
 
 	return errors
+}
+
+func (n *Nginx) String() string {
+	return fmt.Sprintf(
+		"Nginx{Port: %d, ServerName: %s, FastCGIPassPort: %d, FastCGIReadTimeout: %d}",
+		n.Port,
+		n.ServerName,
+		n.FastCGIPassPort,
+		n.FastCGIReadTimeout,
+	)
 }
