@@ -45,6 +45,21 @@ func (c *Configuration) Validate() error {
 	return errors
 }
 
+func (c *Configuration) IsPresent(service string) bool {
+	switch service {
+	case "php":
+		return c.PHP != nil && !c.PHP.IsEmpty()
+	case "nodejs":
+		return c.NodeJS != nil && !(*c.NodeJS == NodeJS{})
+	case "nginx":
+		return c.Nginx != nil && !(*c.Nginx == Nginx{})
+	case "database":
+		return c.Database != nil && !(*c.Database == Database{})
+	default:
+		return false
+	}
+}
+
 func LoadConfigFromFile(filepath string) (*Configuration, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
