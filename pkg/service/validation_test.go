@@ -42,6 +42,19 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestEmptyAdd(t *testing.T) {
+	got := service.ValidationErrors{}
+
+	got.Add("Sample error")
+	got.Add()
+
+	want := service.ValidationErrors{"Sample error"}
+
+	if !equal(got, want) {
+		t.Errorf("Empty add affects contents. Want %v. Got %v", want, got)
+	}
+}
+
 func TestIsEmpty(t *testing.T) {
 	if !(&service.ValidationErrors{}).IsEmpty() {
 		t.Errorf("Failed to validate that empty ValidationErrors is actually empty")
