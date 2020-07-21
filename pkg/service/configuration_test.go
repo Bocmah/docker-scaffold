@@ -1,38 +1,39 @@
-package service
+package service_test
 
 import (
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"reflect"
 	"testing"
 )
 
 func TestLoadConfigFromFile(t *testing.T) {
-	got, err := LoadConfigFromFile("testdata/test.yaml")
+	got, err := service.LoadConfigFromFile("testdata/test.yaml")
 
 	if err != nil {
 		t.Errorf("Got error when loading correct config. Error - %v, Value - %v", err, got)
 		return
 	}
 
-	want := &Configuration{
-		PHP: &PHP{
+	want := &service.Configuration{
+		PHP: &service.PHP{
 			Version: "7.4",
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 		},
-		Nginx: &Nginx{
+		Nginx: &service.Nginx{
 			Port: 80,
-			ServerName: "scaffold",
+			ServerName: "docker-scaffold",
 			FastCGIPassPort: 9000,
 			FastCGIReadTimeout: 60,
 		},
-		NodeJS: &NodeJS{
+		NodeJS: &service.NodeJS{
 			Version: "10",
 		},
-		Database: &Database{
-			System: MySQL,
+		Database: &service.Database{
+			System: service.MySQL,
 			Version: "5.7",
-			Name: "scaffold",
+			Name: "docker-scaffold",
 			Port: 3306,
-			Credentials: Credentials{
+			Credentials: service.Credentials{
 				Username: "bocmah",
 				Password: "test",
 				RootPassword: "testRoot",
@@ -41,6 +42,6 @@ func TestLoadConfigFromFile(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Incorrectly loaded configuration. Want %+v, got %+v", want, got)
+		t.Errorf("Incorrectly loaded configuration. Want %v, got %v", want, got)
 	}
 }
