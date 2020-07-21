@@ -9,7 +9,7 @@ php:
 
 nginx:
   port: 80
-  serverName: scaffold
+  serverName: docker-scaffold
   fastCGIPassPort: 9000
   fastCGIReadTimeout: 60
 
@@ -19,7 +19,7 @@ nodejs:
 database:
   system: mysql
   version: 5.7
-  name: scaffold
+  name: docker-scaffold
   port: 3306
   username: bocmah
   password: test
