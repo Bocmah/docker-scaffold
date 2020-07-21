@@ -43,3 +43,7 @@ func (p *PHP) Validate() error {
 func (p *PHP) String() string {
 	return fmt.Sprintf("PHP{Version: %s, Extensions: %v}", p.Version, p.Extensions)
 }
+
+func (p *PHP) IsEmpty() bool {
+	return p.Version == "" && p.Extensions == nil
+}

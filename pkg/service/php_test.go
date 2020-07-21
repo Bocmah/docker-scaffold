@@ -80,3 +80,13 @@ func TestPHP_ValidateCorrectInput(t *testing.T) {
 
 	failTestOnErrorsOnCorrectInput(errs, t)
 }
+
+func TestPHP_IsEmpty(t *testing.T) {
+	if !(&service.PHP{}).IsEmpty() {
+		t.Errorf("Failed to assert that empty PHP service is actually empty")
+	}
+
+	if (&service.PHP{Version: "7.4"}).IsEmpty() {
+		t.Errorf("Failed to assert that non-empty PHP service is actually non-empty")
+	}
+}
