@@ -1,5 +1,6 @@
+{{- /*gotype: github.com/Bocmah/phpdocker-docker-scaffold/pkg/service.Configuration*/ -}}
 server {
-    listen {{.Port}};
+    listen {{.Nginx.Port}};
     index index.php index.html;
 
     error_log  /var/log/nginx/error.log;
@@ -7,17 +8,17 @@ server {
 
     root /var/www/public;
 
-    server_name {{.Srvname}}.test;
+    server_name {{.Nginx.Srvname}}.test;
 
     location ~ \.php$ {
         try_files $uri =404;
     	fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    	fastcgi_pass {{.ServerName}}:{{.FastCGIPassPort}};
+    	fastcgi_pass {{.Nginx.ServerName}}:{{.Nginx.FastCGIPassPort}};
     	fastcgi_index index.php;
     	include fastcgi_params;
     	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     	fastcgi_param PATH_INFO $fastcgi_path_info;
-	    fastcgi_read_timeout {{.FastCGIReadTimeout}}s;
+	    fastcgi_read_timeout {{.Nginx.FastCGIReadTimeout}}s;
     }
 
     location / {
