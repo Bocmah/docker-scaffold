@@ -1,28 +1,27 @@
 appName: docker-scaffold
-
-php:
-  version: 7.4
-  extensions:
-    - mbstring
-    - zip
-    - exif
-    - pcntl
-    - gd
-
-nginx:
-  port: 80
-  serverName: test-server
-  fastCGIPassPort: 9000
-  fastCGIReadTimeout: 60
-
-nodejs:
-  version: 10
-
-database:
-  system: mysql
-  version: 5.7
-  name: test-db
-  port: 3306
-  username: bocmah
-  password: test
-  rootPassword: testRoot
+projectRoot: /home/user/projects/test
+outputPath: /home/user/output
+services:
+  php:
+    version: 7.4
+    extensions:
+      - mbstring
+      - zip
+      - exif
+      - pcntl
+      - gd
+  nginx:
+    port: 80
+    serverName: test-server
+    fastCGIPassPort: 9000
+    fastCGIReadTimeout: 60
+  nodejs:
+    version: 10
+  database:
+    system: mysql
+    version: 5.7
+    name: test-db
+    port: 3306
+    username: bocmah
+    password: test
+    rootPassword: testRoot

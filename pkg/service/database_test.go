@@ -55,7 +55,7 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 				"Database port is required",
 				"Database root password is required",
 			},
-			actualErrs: errs,
+			actualErrs:   errs,
 			validatedVal: db,
 		}
 
