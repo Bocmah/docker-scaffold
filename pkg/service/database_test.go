@@ -52,7 +52,6 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 		res := validationResult{
 			wantErrs: []string{
 				"Unsupported database system",
-				"Database name is required",
 				"Database port is required",
 				"Database root password is required",
 			},

@@ -30,7 +30,6 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 		res := validationResult{
 			wantErrs: []string{
 				"nginx port is required",
-				"nginx server name is required",
 				"nginx FastCGI pass port is required",
 				"nginx FastCGI read timeout is required",
 			},

@@ -30,10 +30,6 @@ func (n *Nginx) Validate() error {
 		errors.Add("nginx port is required")
 	}
 
-	if n.ServerName == "" {
-		errors.Add("nginx server name is required")
-	}
-
 	if n.FastCGIPassPort == 0 {
 		errors.Add("nginx FastCGI pass port is required")
 	}

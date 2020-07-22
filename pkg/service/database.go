@@ -60,10 +60,6 @@ func (d *Database) Validate() error {
 		errors.Add("Unsupported database system")
 	}
 
-	if d.Name == "" {
-		errors.Add("Database name is required")
-	}
-
 	if d.Port == 0 {
 		errors.Add("Database port is required")
 	}
