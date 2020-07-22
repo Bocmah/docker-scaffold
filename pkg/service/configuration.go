@@ -6,6 +6,7 @@ import (
 )
 
 type Configuration struct {
+	AppName  string `yaml:"appName"`
 	PHP      *PHP
 	NodeJS   *NodeJS
 	Nginx    *Nginx
@@ -24,6 +25,10 @@ func (c *Configuration) FillDefaultsIfNotSet() {
 
 func (c *Configuration) Validate() error {
 	errors := &ValidationErrors{}
+
+	if c.AppName == "" {
+		errors.Add("App name is required")
+	}
 
 	services := []Service{c.PHP, c.NodeJS, c.Nginx, c.Database}
 

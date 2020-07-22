@@ -15,13 +15,14 @@ func TestLoadConfigFromFile(t *testing.T) {
 	}
 
 	want := &service.Configuration{
+		AppName: "docker-scaffold",
 		PHP: &service.PHP{
 			Version:    "7.4",
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 		},
 		Nginx: &service.Nginx{
 			Port:               80,
-			ServerName:         "docker-scaffold",
+			ServerName:         "test-server",
 			FastCGIPassPort:    9000,
 			FastCGIReadTimeout: 60,
 		},
@@ -31,7 +32,7 @@ func TestLoadConfigFromFile(t *testing.T) {
 		Database: &service.Database{
 			System:  service.MySQL,
 			Version: "5.7",
-			Name:    "docker-scaffold",
+			Name:    "test-db",
 			Port:    3306,
 			Credentials: service.Credentials{
 				Username:     "bocmah",

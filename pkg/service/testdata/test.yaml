@@ -1,3 +1,5 @@
+appName: docker-scaffold
+
 php:
   version: 7.4
   extensions:
@@ -9,7 +11,7 @@ php:
 
 nginx:
   port: 80
-  serverName: docker-scaffold
+  serverName: test-server
   fastCGIPassPort: 9000
   fastCGIReadTimeout: 60
 
@@ -19,7 +21,7 @@ nodejs:
 database:
   system: mysql
   version: 5.7
-  name: docker-scaffold
+  name: test-db
   port: 3306
   username: bocmah
   password: test
