@@ -3,15 +3,20 @@ package service
 import "fmt"
 
 type Nginx struct {
-	Port               int
+	HttpPort           int    `yaml:"httpPort"`
+	HttpsPort          int    `yaml:"httpsPort"`
 	ServerName         string `yaml:"serverName"`
 	FastCGIPassPort    int    `yaml:"fastCGIPassPort"`
 	FastCGIReadTimeout int    `yaml:"fastCGIReadTimeout"`
 }
 
 func (n *Nginx) FillDefaultsIfNotSet() {
-	if n.Port == 0 {
-		n.Port = 80
+	if n.HttpPort == 0 {
+		n.HttpPort = 80
+	}
+
+	if n.HttpsPort == 0 {
+		n.HttpsPort = 443
 	}
 
 	if n.FastCGIPassPort == 0 {
@@ -26,7 +31,7 @@ func (n *Nginx) FillDefaultsIfNotSet() {
 func (n *Nginx) Validate() error {
 	errors := &ValidationErrors{}
 
-	if n.Port == 0 {
+	if n.HttpPort == 0 {
 		errors.Add("nginx port is required")
 	}
 
@@ -47,8 +52,9 @@ func (n *Nginx) Validate() error {
 
 func (n *Nginx) String() string {
 	return fmt.Sprintf(
-		"Nginx{Port: %d, ServerName: %s, FastCGIPassPort: %d, FastCGIReadTimeout: %d}",
-		n.Port,
+		"Nginx{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGIPassPort: %d, FastCGIReadTimeout: %d}",
+		n.HttpPort,
+		n.HttpsPort,
 		n.ServerName,
 		n.FastCGIPassPort,
 		n.FastCGIReadTimeout,

@@ -15,16 +15,17 @@ func TestLoadConfigFromFile(t *testing.T) {
 	}
 
 	want := &service.FullConfig{
-		AppName: "docker-scaffold",
+		AppName:     "docker-scaffold",
 		ProjectRoot: "/home/user/projects/test",
-		OutputPath: "/home/user/output",
+		OutputPath:  "/home/user/output",
 		Services: &service.ServicesConfig{
 			PHP: &service.PHP{
 				Version:    "7.4",
 				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 			},
 			Nginx: &service.Nginx{
-				Port:               80,
+				HttpPort:           80,
+				HttpsPort:          443,
 				ServerName:         "test-server",
 				FastCGIPassPort:    9000,
 				FastCGIReadTimeout: 60,
@@ -47,6 +48,6 @@ func TestLoadConfigFromFile(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Incorrectly loaded configuration. Want %v, got %v", want, got)
+		t.Errorf("Incorrectly loaded configuration. \nWant %v\nGot %v", want, got)
 	}
 }

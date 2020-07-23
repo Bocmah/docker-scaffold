@@ -11,8 +11,9 @@ func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
 	nginx.FillDefaultsIfNotSet()
 
 	want := service.Nginx{
-		Port: 80,
-		FastCGIPassPort: 9000,
+		HttpPort:           80,
+		HttpsPort:          443,
+		FastCGIPassPort:    9000,
 		FastCGIReadTimeout: 60,
 	}
 
@@ -33,7 +34,7 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 				"nginx FastCGI pass port is required",
 				"nginx FastCGI read timeout is required",
 			},
-			actualErrs: errs,
+			actualErrs:   errs,
 			validatedVal: nginx,
 		}
 
@@ -45,10 +46,10 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 
 func TestNginx_ValidateCorrectInput(t *testing.T) {
 	nginx := service.Nginx{
-		Port: 80,
-		FastCGIPassPort: 9000,
+		HttpPort:           80,
+		FastCGIPassPort:    9000,
 		FastCGIReadTimeout: 60,
-		ServerName: "testserv",
+		ServerName:         "testserv",
 	}
 
 	errs := nginx.Validate()

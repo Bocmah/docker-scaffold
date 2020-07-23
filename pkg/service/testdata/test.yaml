@@ -11,7 +11,7 @@ services:
       - pcntl
       - gd
   nginx:
-    port: 80
+    httpPort: 80
     serverName: test-server
     fastCGIPassPort: 9000
     fastCGIReadTimeout: 60
