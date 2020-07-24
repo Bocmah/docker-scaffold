@@ -12,7 +12,7 @@ func (p *PHP) FillDefaultsIfNotSet() {
 		p.Version = "7.4"
 	}
 
-	if p.Extensions == nil {
+	if len(p.Extensions) == 0 {
 		p.Extensions = []string{"mbstring", "zip", "exif", "pcntl", "gd"}
 	}
 }
@@ -45,5 +45,5 @@ func (p *PHP) String() string {
 }
 
 func (p *PHP) IsEmpty() bool {
-	return p.Version == "" && p.Extensions == nil
+	return p.Version == "" && len(p.Extensions) == 0
 }
