@@ -1,8 +1,10 @@
 package service
 
 import (
-	"gopkg.in/yaml.v2"
+	"fmt"
 	"io/ioutil"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Config interface {
@@ -52,20 +54,20 @@ func (c *FullConfig) Validate() error {
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read config: %s", err)
 	}
 
 	conf := &FullConfig{}
 
 	err = yaml.Unmarshal(data, conf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse config: %s", err)
 	}
 
 	conf.FillDefaultsIfNotSet()
 	err = conf.Validate()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("validate config: %s", err)
 	}
 
 	return conf, nil
