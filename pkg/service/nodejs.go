@@ -29,4 +29,3 @@ func (n *NodeJS) Validate() error {
 func (n *NodeJS) String() string {
 	return fmt.Sprintf("NodeJS{Version: %s}", n.Version)
 }
-

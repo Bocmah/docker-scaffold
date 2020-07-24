@@ -1,8 +1,9 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func equal(e1 service.ValidationErrors, e2 service.ValidationErrors) bool {

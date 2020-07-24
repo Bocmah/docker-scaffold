@@ -85,5 +85,5 @@ func (d *Database) String() string {
 		d.Username,
 		d.Password,
 		d.RootPassword,
-		)
+	)
 }
