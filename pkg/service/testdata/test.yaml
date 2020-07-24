@@ -13,8 +13,9 @@ services:
   nginx:
     httpPort: 80
     serverName: test-server
-    fastCGIPassPort: 9000
-    fastCGIReadTimeout: 60
+    fastCGI:
+      passPort: 9000
+      readTimeoutSeconds: 60
   nodejs:
     version: 10
   database:

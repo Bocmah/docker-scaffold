@@ -1,9 +1,10 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"reflect"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func TestLoadConfigFromFile(t *testing.T) {
@@ -24,11 +25,13 @@ func TestLoadConfigFromFile(t *testing.T) {
 				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 			},
 			Nginx: &service.Nginx{
-				HttpPort:           80,
-				HttpsPort:          443,
-				ServerName:         "test-server",
-				FastCGIPassPort:    9000,
-				FastCGIReadTimeout: 60,
+				HttpPort:   80,
+				HttpsPort:  443,
+				ServerName: "test-server",
+				FastCGI: service.FastCGI{
+					PassPort:           9000,
+					ReadTimeoutSeconds: 60,
+				},
 			},
 			NodeJS: &service.NodeJS{
 				Version: "10",

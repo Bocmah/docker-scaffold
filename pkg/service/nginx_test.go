@@ -1,8 +1,9 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
@@ -11,10 +12,12 @@ func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
 	nginx.FillDefaultsIfNotSet()
 
 	want := service.Nginx{
-		HttpPort:           80,
-		HttpsPort:          443,
-		FastCGIPassPort:    9000,
-		FastCGIReadTimeout: 60,
+		HttpPort:  80,
+		HttpsPort: 443,
+		FastCGI: service.FastCGI{
+			PassPort:           9000,
+			ReadTimeoutSeconds: 60,
+		},
 	}
 
 	if nginx != want {
@@ -46,10 +49,12 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 
 func TestNginx_ValidateCorrectInput(t *testing.T) {
 	nginx := service.Nginx{
-		HttpPort:           80,
-		FastCGIPassPort:    9000,
-		FastCGIReadTimeout: 60,
-		ServerName:         "testserv",
+		HttpPort: 80,
+		FastCGI: service.FastCGI{
+			PassPort:           9000,
+			ReadTimeoutSeconds: 60,
+		},
+		ServerName: "testserv",
 	}
 
 	errs := nginx.Validate()

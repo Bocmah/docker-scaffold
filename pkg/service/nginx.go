@@ -3,11 +3,15 @@ package service
 import "fmt"
 
 type Nginx struct {
-	HttpPort           int    `yaml:"httpPort"`
-	HttpsPort          int    `yaml:"httpsPort"`
-	ServerName         string `yaml:"serverName"`
-	FastCGIPassPort    int    `yaml:"fastCGIPassPort"`
-	FastCGIReadTimeout int    `yaml:"fastCGIReadTimeout"`
+	HttpPort   int     `yaml:"httpPort"`
+	HttpsPort  int     `yaml:"httpsPort"`
+	ServerName string  `yaml:"serverName"`
+	FastCGI    FastCGI `yaml:"fastCGI"`
+}
+
+type FastCGI struct {
+	PassPort           int `yaml:"passPort"`
+	ReadTimeoutSeconds int `yaml:"readTimeoutSeconds"`
 }
 
 func (n *Nginx) FillDefaultsIfNotSet() {
@@ -19,12 +23,12 @@ func (n *Nginx) FillDefaultsIfNotSet() {
 		n.HttpsPort = 443
 	}
 
-	if n.FastCGIPassPort == 0 {
-		n.FastCGIPassPort = 9000
+	if n.FastCGI.PassPort == 0 {
+		n.FastCGI.PassPort = 9000
 	}
 
-	if n.FastCGIReadTimeout == 0 {
-		n.FastCGIReadTimeout = 60
+	if n.FastCGI.ReadTimeoutSeconds == 0 {
+		n.FastCGI.ReadTimeoutSeconds = 60
 	}
 }
 
@@ -35,11 +39,11 @@ func (n *Nginx) Validate() error {
 		errors.Add("nginx port is required")
 	}
 
-	if n.FastCGIPassPort == 0 {
+	if n.FastCGI.PassPort == 0 {
 		errors.Add("nginx FastCGI pass port is required")
 	}
 
-	if n.FastCGIReadTimeout == 0 {
+	if n.FastCGI.ReadTimeoutSeconds == 0 {
 		errors.Add("nginx FastCGI read timeout is required")
 	}
 
@@ -52,11 +56,10 @@ func (n *Nginx) Validate() error {
 
 func (n *Nginx) String() string {
 	return fmt.Sprintf(
-		"Nginx{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGIPassPort: %d, FastCGIReadTimeout: %d}",
+		"Nginx{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGI: %v}",
 		n.HttpPort,
 		n.HttpsPort,
 		n.ServerName,
-		n.FastCGIPassPort,
-		n.FastCGIReadTimeout,
+		n.FastCGI,
 	)
 }

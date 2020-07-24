@@ -1,8 +1,9 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func TestServicesConfig_IsPresent(t *testing.T) {
@@ -27,10 +28,12 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 		},
 		Nginx: &service.Nginx{
-			HttpPort:           80,
-			ServerName:         "docker-scaffold",
-			FastCGIPassPort:    9000,
-			FastCGIReadTimeout: 60,
+			HttpPort:   80,
+			ServerName: "docker-scaffold",
+			FastCGI: service.FastCGI{
+				PassPort:           9000,
+				ReadTimeoutSeconds: 60,
+			},
 		},
 		NodeJS: &service.NodeJS{
 			Version: "10",
