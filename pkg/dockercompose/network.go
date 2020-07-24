@@ -7,11 +7,11 @@ import (
 type NetworkDriver string
 
 const (
-	Bridge  NetworkDriver = "bridge"
-	Host    NetworkDriver = "host"
-	Overlay NetworkDriver = "overlay"
-	Macvlan NetworkDriver = "macvlan"
-	None    NetworkDriver = "none"
+	NetworkDriverBridge  NetworkDriver = "bridge"
+	NetworkDriverHost    NetworkDriver = "host"
+	NetworkDriverOverlay NetworkDriver = "overlay"
+	NetworkDriverMacvlan NetworkDriver = "macvlan"
+	NetworkDriverNone    NetworkDriver = "none"
 )
 
 type Network struct {

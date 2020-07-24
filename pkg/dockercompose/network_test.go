@@ -8,7 +8,7 @@ func TestNetwork_String(t *testing.T) {
 		want  string
 	}{
 		"simple": {
-			input: Network{Name: "test-network", Driver: Bridge},
+			input: Network{Name: "test-network", Driver: NetworkDriverBridge},
 			want: `test-network:
   driver: bridge`},
 		"no driver": {
@@ -16,7 +16,7 @@ func TestNetwork_String(t *testing.T) {
 			want:  "",
 		},
 		"no name": {
-			input: Network{Driver: Host},
+			input: Network{Driver: NetworkDriverHost},
 			want:  "",
 		},
 		"no name and no driver": {
