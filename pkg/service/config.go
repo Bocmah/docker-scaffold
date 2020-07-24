@@ -59,14 +59,12 @@ func LoadConfigFromFile(filepath string) (*FullConfig, error) {
 
 	conf := &FullConfig{}
 
-	err = yaml.Unmarshal(data, conf)
-	if err != nil {
+	if err := yaml.Unmarshal(data, conf); err != nil {
 		return nil, fmt.Errorf("parse config: %s", err)
 	}
 
 	conf.FillDefaultsIfNotSet()
-	err = conf.Validate()
-	if err != nil {
+	if err := conf.Validate(); err != nil {
 		return nil, fmt.Errorf("validate config: %s", err)
 	}
 
