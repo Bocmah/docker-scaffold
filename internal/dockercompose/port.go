@@ -2,7 +2,6 @@ package dockercompose
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -40,8 +39,8 @@ func (m PortsMapping) String() string {
 	}
 
 	if m.Host == "" {
-		return strconv.Quote(m.Container)
+		return DoubleQuotted(m.Container)
 	}
 
-	return strconv.Quote(fmt.Sprintf("%s:%s", m.Host, m.Container))
+	return DoubleQuotted(Mapping(m.Host, m.Container))
 }

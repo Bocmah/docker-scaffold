@@ -1,31 +1,35 @@
-package dockercompose
+package dockercompose_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+)
 
 func TestNamedVolume_String(t *testing.T) {
 	tests := map[string]struct {
-		input NamedVolume
+		input dockercompose.NamedVolume
 		want  string
 	}{
 		"with name and local driver": {
-			input: NamedVolume{Name: "test-data", Driver: "local"},
+			input: dockercompose.NamedVolume{Name: "test-data", Driver: "local"},
 			want:  "test-data:",
 		},
 		"with name and non-local driver": {
-			input: NamedVolume{Name: "test-data", Driver: "foo"},
+			input: dockercompose.NamedVolume{Name: "test-data", Driver: "foo"},
 			want: `test-data:
   driver: foo`,
 		},
 		"without name": {
-			input: NamedVolume{Driver: "local"},
+			input: dockercompose.NamedVolume{Driver: "local"},
 			want:  "",
 		},
 		"without driver": {
-			input: NamedVolume{Name: "test-data"},
+			input: dockercompose.NamedVolume{Name: "test-data"},
 			want:  "",
 		},
 		"without driver and name": {
-			input: NamedVolume{},
+			input: dockercompose.NamedVolume{},
 			want:  "",
 		},
 	}
@@ -42,23 +46,23 @@ func TestNamedVolume_String(t *testing.T) {
 
 func TestVolume_String(t *testing.T) {
 	tests := map[string]struct {
-		input Volume
+		input dockercompose.Volume
 		want  string
 	}{
 		"simple": {
-			input: Volume{Source: "/home/test", Target: "/var/test"},
+			input: dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
 			want:  "/home/test:/var/test",
 		},
 		"no source": {
-			input: Volume{Target: "/var/test"},
+			input: dockercompose.Volume{Target: "/var/test"},
 			want:  "/var/test",
 		},
 		"no target": {
-			input: Volume{Source: "/home/test"},
+			input: dockercompose.Volume{Source: "/home/test"},
 			want:  "",
 		},
 		"no source and no target": {
-			input: Volume{},
+			input: dockercompose.Volume{},
 			want:  "",
 		},
 	}

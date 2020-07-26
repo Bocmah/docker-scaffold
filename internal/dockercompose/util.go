@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func doubleQuotted(str string) string {
+func DoubleQuotted(str string) string {
 	if str == "" {
 		return ""
 	}
@@ -13,7 +13,7 @@ func doubleQuotted(str string) string {
 	return strconv.Quote(str)
 }
 
-func mapping(str1, str2 string) string {
+func Mapping(str1, str2 string) string {
 	if str1 == "" {
 		return str2
 	}

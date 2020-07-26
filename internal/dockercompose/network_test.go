@@ -1,26 +1,30 @@
-package dockercompose
+package dockercompose_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+)
 
 func TestNetwork_String(t *testing.T) {
 	tests := map[string]struct {
-		input Network
+		input dockercompose.Network
 		want  string
 	}{
 		"simple": {
-			input: Network{Name: "test-network", Driver: NetworkDriverBridge},
+			input: dockercompose.Network{Name: "test-network", Driver: dockercompose.NetworkDriverBridge},
 			want: `test-network:
   driver: bridge`},
 		"no driver": {
-			input: Network{Name: "service-network"},
+			input: dockercompose.Network{Name: "service-network"},
 			want:  "",
 		},
 		"no name": {
-			input: Network{Driver: NetworkDriverHost},
+			input: dockercompose.Network{Driver: dockercompose.NetworkDriverHost},
 			want:  "",
 		},
 		"no name and no driver": {
-			input: Network{},
+			input: dockercompose.Network{},
 			want:  "",
 		},
 	}

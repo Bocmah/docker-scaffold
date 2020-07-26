@@ -15,7 +15,7 @@ func (v Volume) String() string {
 		return ""
 	}
 
-	return mapping(v.Source, v.Target)
+	return Mapping(v.Source, v.Target)
 }
 
 type NamedVolume struct {
