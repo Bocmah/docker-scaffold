@@ -38,3 +38,32 @@ func TestNetwork_String(t *testing.T) {
 		})
 	}
 }
+
+func TestNetworks_String(t *testing.T) {
+	tests := map[string]struct {
+		input dockercompose.Networks
+		want  string
+	}{
+		"simple": {
+			input: dockercompose.Networks{
+				dockercompose.Network{Name: "test-data", Driver: dockercompose.NetworkDriverBridge},
+				dockercompose.Network{Name: "test-data-1", Driver: dockercompose.NetworkDriverHost},
+			},
+			want: `networks:
+  - test-data
+  - test-data-1`},
+		"empty": {
+			input: dockercompose.Networks{},
+			want:  "",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.String()
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
