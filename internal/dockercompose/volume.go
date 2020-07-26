@@ -18,6 +18,29 @@ func (v Volume) String() string {
 	return Mapping(v.Source, v.Target)
 }
 
+type Volumes []Volume
+
+func (v Volumes) String() string {
+	length := len(v)
+
+	if length == 0 {
+		return ""
+	}
+
+	var sb strings.Builder
+	sb.WriteString("volumes:\n")
+
+	for i, volume := range v {
+		sb.WriteString(fmt.Sprintf("  - %s", volume))
+
+		if i+1 != length {
+			sb.WriteString("\n")
+		}
+	}
+
+	return sb.String()
+}
+
 type NamedVolume struct {
 	Name   string
 	Driver string

@@ -76,3 +76,32 @@ func TestVolume_String(t *testing.T) {
 		})
 	}
 }
+
+func TestVolumes_String(t *testing.T) {
+	tests := map[string]struct {
+		input dockercompose.Volumes
+		want  string
+	}{
+		"simple": {
+			input: dockercompose.Volumes{
+				dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
+				dockercompose.Volume{Target: "/var/test"},
+			},
+			want: `volumes:
+  - /home/test:/var/test
+  - /var/test`},
+		"empty": {
+			input: dockercompose.Volumes{},
+			want:  "",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.String()
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
