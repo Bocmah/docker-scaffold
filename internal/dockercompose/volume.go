@@ -5,6 +5,19 @@ import (
 	"strings"
 )
 
+type Volume struct {
+	Source string
+	Target string
+}
+
+func (v Volume) String() string {
+	if v.Target == "" {
+		return ""
+	}
+
+	return mapping(v.Source, v.Target)
+}
+
 type NamedVolume struct {
 	Name   string
 	Driver string

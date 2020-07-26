@@ -39,3 +39,36 @@ func TestNamedVolume_String(t *testing.T) {
 		})
 	}
 }
+
+func TestVolume_String(t *testing.T) {
+	tests := map[string]struct {
+		input Volume
+		want  string
+	}{
+		"simple": {
+			input: Volume{Source: "/home/test", Target: "/var/test"},
+			want:  "/home/test:/var/test",
+		},
+		"no source": {
+			input: Volume{Target: "/var/test"},
+			want:  "/var/test",
+		},
+		"no target": {
+			input: Volume{Source: "/home/test"},
+			want:  "",
+		},
+		"no source and no target": {
+			input: Volume{},
+			want:  "",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.String()
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
