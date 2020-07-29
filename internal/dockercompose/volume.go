@@ -20,7 +20,7 @@ func (v Volume) String() string {
 
 type Volumes []Volume
 
-func (v Volumes) String() string {
+func (v Volumes) Render() string {
 	length := len(v)
 
 	if length == 0 {

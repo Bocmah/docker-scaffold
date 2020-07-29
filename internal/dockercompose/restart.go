@@ -11,7 +11,7 @@ const (
 	RestartPolicyUnlessStopped RestartPolicy = "unless-stopped"
 )
 
-func (r RestartPolicy) String() string {
+func (r RestartPolicy) Render() string {
 	if r == "" {
 		return ""
 	}

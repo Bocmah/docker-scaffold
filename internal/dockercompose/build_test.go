@@ -6,7 +6,7 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 )
 
-func TestBuild_String(t *testing.T) {
+func TestBuild_Render(t *testing.T) {
 	tests := map[string]struct {
 		input dockercompose.Build
 		want  string
@@ -33,7 +33,7 @@ func TestBuild_String(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := tc.input.String()
+			got := tc.input.Render()
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
 			}

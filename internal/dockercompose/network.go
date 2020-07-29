@@ -30,7 +30,7 @@ func (n Network) String() string {
 
 type Networks []Network
 
-func (n Networks) String() string {
+func (n Networks) Render() string {
 	length := len(n)
 
 	if length == 0 {

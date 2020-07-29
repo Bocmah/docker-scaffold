@@ -7,7 +7,7 @@ type Image struct {
 	Tag  string
 }
 
-func (i Image) String() string {
+func (i Image) Render() string {
 	if i.Name == "" {
 		return ""
 	}

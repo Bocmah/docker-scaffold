@@ -7,7 +7,7 @@ import (
 
 type Environment map[string]string
 
-func (e Environment) String() string {
+func (e Environment) Render() string {
 	length := len(e)
 
 	if length == 0 {

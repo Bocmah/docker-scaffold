@@ -6,7 +6,7 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 )
 
-func TestImage_String(t *testing.T) {
+func TestImage_Render(t *testing.T) {
 	tests := map[string]struct {
 		input dockercompose.Image
 		want  string
@@ -27,7 +27,7 @@ func TestImage_String(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := tc.input.String()
+			got := tc.input.Render()
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
 			}
