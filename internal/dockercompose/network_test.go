@@ -31,7 +31,7 @@ func TestNetwork_String(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := tc.input.String()
+			got := tc.input.Render()
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
 			}

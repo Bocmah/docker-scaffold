@@ -46,7 +46,7 @@ type NamedVolume struct {
 	Driver string
 }
 
-func (v NamedVolume) String() string {
+func (v NamedVolume) Render() string {
 	if v.Name == "" || v.Driver == "" {
 		return ""
 	}

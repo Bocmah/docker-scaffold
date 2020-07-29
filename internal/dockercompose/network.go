@@ -20,7 +20,7 @@ type Network struct {
 	Driver NetworkDriver
 }
 
-func (n Network) String() string {
+func (n Network) Render() string {
 	if n.Name == "" || n.Driver == "" {
 		return ""
 	}
