@@ -3,6 +3,8 @@ package dockercompose_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 )
 
@@ -90,7 +92,7 @@ func TestService_Render(t *testing.T) {
 
 	got := service.Render()
 
-	if got != want {
-		t.Errorf("got:\n%s\nwant:\n%s", got, want)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("service.Render() mismatch (-want +got):\n%s", diff)
 	}
 }
