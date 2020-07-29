@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+type VolumeDriver string
+
+const (
+	VolumeDriverLocal VolumeDriver = "local"
+)
+
 type Volume struct {
 	Source string
 	Target string
@@ -43,7 +49,7 @@ func (v Volumes) Render() string {
 
 type NamedVolume struct {
 	Name   string
-	Driver string
+	Driver VolumeDriver
 }
 
 func (v NamedVolume) Render() string {
@@ -54,7 +60,7 @@ func (v NamedVolume) Render() string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("%s:", v.Name))
 
-	if v.Driver == "local" {
+	if v.Driver == VolumeDriverLocal {
 		return sb.String()
 	}
 

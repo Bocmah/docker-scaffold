@@ -58,7 +58,7 @@ func (s Service) Render() string {
 		sb.WriteString(nesting.ApplyTo(fmt.Sprintf("working_dir: %s", s.WorkingDir)))
 	}
 
-	renderables := []renderableItem{s.Build, s.Image, s.Restart, s.Environment, s.Networks, s.Volumes}
+	renderables := []renderableItem{s.Build, s.Image, s.Restart, s.Ports, s.Environment, s.Networks, s.Volumes}
 
 	for _, r := range renderables {
 		rendered := r.Render()
