@@ -36,6 +36,7 @@ type Service struct {
 	ContainerName string
 	WorkingDir    string
 	Restart       RestartPolicy
+	Ports         Ports
 	Environment   Environment
 	Networks      Networks
 	Volumes       Volumes

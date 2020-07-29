@@ -2,12 +2,13 @@ package dockercompose
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
 type Ports []PortsMapping
 
-func (p Ports) String() string {
+func (p Ports) Render() string {
 	length := len(p)
 
 	if length == 0 {
@@ -19,9 +20,9 @@ func (p Ports) String() string {
 
 	for i, m := range p {
 		if i+1 == length {
-			_, _ = fmt.Fprintf(&sb, "  - %s", m)
+			_, _ = fmt.Fprintf(&sb, "  - %s", m.Render())
 		} else {
-			_, _ = fmt.Fprintf(&sb, "  - %s\n", m)
+			_, _ = fmt.Fprintf(&sb, "  - %s\n", m.Render())
 		}
 	}
 
@@ -29,18 +30,18 @@ func (p Ports) String() string {
 }
 
 type PortsMapping struct {
-	Host      string
-	Container string
+	Host      int
+	Container int
 }
 
-func (m PortsMapping) String() string {
-	if m.Container == "" {
+func (m PortsMapping) Render() string {
+	if m.Container == 0 {
 		return ""
 	}
 
-	if m.Host == "" {
-		return DoubleQuotted(m.Container)
+	if m.Host == 0 {
+		return DoubleQuotted(strconv.Itoa(m.Container))
 	}
 
-	return DoubleQuotted(Mapping(m.Host, m.Container))
+	return DoubleQuotted(Mapping(strconv.Itoa(m.Host), strconv.Itoa(m.Container)))
 }
