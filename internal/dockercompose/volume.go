@@ -11,12 +11,12 @@ const (
 	VolumeDriverLocal VolumeDriver = "local"
 )
 
-type Volume struct {
+type ServiceVolume struct {
 	Source string
 	Target string
 }
 
-func (v *Volume) String() string {
+func (v *ServiceVolume) String() string {
 	if v.Target == "" {
 		return ""
 	}
@@ -24,7 +24,7 @@ func (v *Volume) String() string {
 	return Mapping(v.Source, v.Target)
 }
 
-type ServiceVolumes []*Volume
+type ServiceVolumes []*ServiceVolume
 
 func (v ServiceVolumes) Render() string {
 	length := len(v)
@@ -68,4 +68,22 @@ func (v *NamedVolume) Render() string {
 	sb.WriteString(fmt.Sprintf("  driver: %s", v.Driver))
 
 	return sb.String()
+}
+
+type NamedVolumes []*NamedVolume
+
+func (v NamedVolumes) Render() string {
+	var sb strings.Builder
+
+	if len(v) != 0 {
+		for _, vol := range v {
+			sb.WriteString(vol.Render())
+		}
+	}
+
+	return sb.String()
+}
+
+func (v NamedVolumes) IsEmpty() bool {
+	return len(v) == 0
 }

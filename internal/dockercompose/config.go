@@ -8,8 +8,8 @@ import (
 type Config struct {
 	Version  string
 	Services []*Service
-	Networks []*Network
-	Volumes  []*NamedVolume
+	Networks Networks
+	Volumes  NamedVolumes
 }
 
 func (c *Config) Render() string {
@@ -30,22 +30,14 @@ func (c *Config) Render() string {
 		sb.WriteString(nesting.ApplyTo(s.Render()))
 	}
 
-	if len(c.Networks) != 0 {
-		sb.WriteString("\nnetworks:")
-
-		for _, n := range c.Networks {
-			sb.WriteString("\n")
-			sb.WriteString(nesting.ApplyTo(n.Render()))
-		}
+	if !c.Networks.IsEmpty() {
+		sb.WriteString("\nnetworks:\n")
+		sb.WriteString(nesting.ApplyTo(c.Networks.Render()))
 	}
 
-	if len(c.Volumes) != 0 {
-		sb.WriteString("\nvolumes:")
-
-		for _, v := range c.Volumes {
-			sb.WriteString("\n")
-			sb.WriteString(nesting.ApplyTo(v.Render()))
-		}
+	if !c.Volumes.IsEmpty() {
+		sb.WriteString("\nvolumes:\n")
+		sb.WriteString(nesting.ApplyTo(c.Volumes.Render()))
 	}
 
 	return sb.String()

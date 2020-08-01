@@ -29,7 +29,7 @@ func TestService_Render(t *testing.T) {
 			&dockercompose.Network{Name: "test-network", Driver: dockercompose.NetworkDriverBridge},
 		},
 		Volumes: dockercompose.ServiceVolumes{
-			&dockercompose.Volume{Source: "/home/test/app", Target: "/var/www"},
+			&dockercompose.ServiceVolume{Source: "/home/test/app", Target: "/var/www"},
 		},
 	}
 

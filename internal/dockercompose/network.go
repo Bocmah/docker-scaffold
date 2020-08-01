@@ -50,3 +50,21 @@ func (n ServiceNetworks) Render() string {
 
 	return sb.String()
 }
+
+type Networks []*Network
+
+func (n Networks) Render() string {
+	var sb strings.Builder
+
+	if len(n) != 0 {
+		for _, vol := range n {
+			sb.WriteString(vol.Render())
+		}
+	}
+
+	return sb.String()
+}
+
+func (n Networks) IsEmpty() bool {
+	return len(n) == 0
+}

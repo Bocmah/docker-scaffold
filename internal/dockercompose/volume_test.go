@@ -46,23 +46,23 @@ func TestNamedVolume_String(t *testing.T) {
 
 func TestVolume_String(t *testing.T) {
 	tests := map[string]struct {
-		input dockercompose.Volume
+		input dockercompose.ServiceVolume
 		want  string
 	}{
 		"simple": {
-			input: dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
+			input: dockercompose.ServiceVolume{Source: "/home/test", Target: "/var/test"},
 			want:  "/home/test:/var/test",
 		},
 		"no source": {
-			input: dockercompose.Volume{Target: "/var/test"},
+			input: dockercompose.ServiceVolume{Target: "/var/test"},
 			want:  "/var/test",
 		},
 		"no target": {
-			input: dockercompose.Volume{Source: "/home/test"},
+			input: dockercompose.ServiceVolume{Source: "/home/test"},
 			want:  "",
 		},
 		"no source and no target": {
-			input: dockercompose.Volume{},
+			input: dockercompose.ServiceVolume{},
 			want:  "",
 		},
 	}
@@ -84,8 +84,8 @@ func TestVolumes_Render(t *testing.T) {
 	}{
 		"simple": {
 			input: dockercompose.ServiceVolumes{
-				&dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
-				&dockercompose.Volume{Target: "/var/test"},
+				&dockercompose.ServiceVolume{Source: "/home/test", Target: "/var/test"},
+				&dockercompose.ServiceVolume{Target: "/var/test"},
 			},
 			want: `volumes:
   - /home/test:/var/test
