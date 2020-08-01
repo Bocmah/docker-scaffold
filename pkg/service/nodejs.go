@@ -2,17 +2,17 @@ package service
 
 import "fmt"
 
-type NodeJS struct {
+type NodeJSConfig struct {
 	Version string
 }
 
-func (n *NodeJS) FillDefaultsIfNotSet() {
+func (n *NodeJSConfig) FillDefaultsIfNotSet() {
 	if n.Version == "" {
 		n.Version = "latest"
 	}
 }
 
-func (n *NodeJS) Validate() error {
+func (n *NodeJSConfig) Validate() error {
 	errors := &ValidationErrors{}
 
 	if n.Version == "" {
@@ -26,6 +26,6 @@ func (n *NodeJS) Validate() error {
 	return errors
 }
 
-func (n *NodeJS) String() string {
-	return fmt.Sprintf("NodeJS{Version: %s}", n.Version)
+func (n *NodeJSConfig) String() string {
+	return fmt.Sprintf("NodeJSConfig{Version: %s}", n.Version)
 }

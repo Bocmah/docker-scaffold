@@ -20,11 +20,11 @@ func TestLoadConfigFromFile(t *testing.T) {
 		ProjectRoot: "/home/user/projects/test",
 		OutputPath:  "/home/user/output",
 		Services: &service.ServicesConfig{
-			PHP: &service.PHP{
+			PHP: &service.PHPConfig{
 				Version:    "7.4",
 				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 			},
-			Nginx: &service.Nginx{
+			Nginx: &service.NginxConfig{
 				HttpPort:   80,
 				HttpsPort:  443,
 				ServerName: "test-server",
@@ -33,10 +33,10 @@ func TestLoadConfigFromFile(t *testing.T) {
 					ReadTimeoutSeconds: 60,
 				},
 			},
-			NodeJS: &service.NodeJS{
+			NodeJS: &service.NodeJSConfig{
 				Version: "10",
 			},
-			Database: &service.Database{
+			Database: &service.DatabaseConfig{
 				System:  service.MySQL,
 				Version: "5.7",
 				Name:    "test-db",

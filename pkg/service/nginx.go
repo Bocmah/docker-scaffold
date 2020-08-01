@@ -2,7 +2,7 @@ package service
 
 import "fmt"
 
-type Nginx struct {
+type NginxConfig struct {
 	HttpPort   int     `yaml:"httpPort"`
 	HttpsPort  int     `yaml:"httpsPort"`
 	ServerName string  `yaml:"serverName"`
@@ -14,7 +14,7 @@ type FastCGI struct {
 	ReadTimeoutSeconds int `yaml:"readTimeoutSeconds"`
 }
 
-func (n *Nginx) FillDefaultsIfNotSet() {
+func (n *NginxConfig) FillDefaultsIfNotSet() {
 	if n.HttpPort == 0 {
 		n.HttpPort = 80
 	}
@@ -32,7 +32,7 @@ func (n *Nginx) FillDefaultsIfNotSet() {
 	}
 }
 
-func (n *Nginx) Validate() error {
+func (n *NginxConfig) Validate() error {
 	errors := &ValidationErrors{}
 
 	if n.HttpPort == 0 {
@@ -54,9 +54,9 @@ func (n *Nginx) Validate() error {
 	return errors
 }
 
-func (n *Nginx) String() string {
+func (n *NginxConfig) String() string {
 	return fmt.Sprintf(
-		"Nginx{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGI: %v}",
+		"NginxConfig{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGI: %v}",
 		n.HttpPort,
 		n.HttpsPort,
 		n.ServerName,

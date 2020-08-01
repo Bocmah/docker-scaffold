@@ -1,16 +1,17 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func TestNodeJS_FillDefaultsIfNotSet(t *testing.T) {
-	nodejs := service.NodeJS{}
+	nodejs := service.NodeJSConfig{}
 
 	nodejs.FillDefaultsIfNotSet()
 
-	want := service.NodeJS{
+	want := service.NodeJSConfig{
 		Version: "latest",
 	}
 
@@ -20,7 +21,7 @@ func TestNodeJS_FillDefaultsIfNotSet(t *testing.T) {
 }
 
 func TestNodeJS_ValidateIncorrectInput(t *testing.T) {
-	nodejs := service.NodeJS{}
+	nodejs := service.NodeJSConfig{}
 
 	errs := nodejs.Validate()
 
@@ -29,7 +30,7 @@ func TestNodeJS_ValidateIncorrectInput(t *testing.T) {
 			wantErrs: []string{
 				"Node.js version is required",
 			},
-			actualErrs: errs,
+			actualErrs:   errs,
 			validatedVal: nodejs,
 		}
 
@@ -40,7 +41,7 @@ func TestNodeJS_ValidateIncorrectInput(t *testing.T) {
 }
 
 func TestNodeJS_ValidateCorrectInput(t *testing.T) {
-	nodejs := service.NodeJS{Version: "latest"}
+	nodejs := service.NodeJSConfig{Version: "latest"}
 
 	errs := nodejs.Validate()
 

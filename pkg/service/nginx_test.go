@@ -7,11 +7,11 @@ import (
 )
 
 func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
-	nginx := service.Nginx{}
+	nginx := service.NginxConfig{}
 
 	nginx.FillDefaultsIfNotSet()
 
-	want := service.Nginx{
+	want := service.NginxConfig{
 		HttpPort:  80,
 		HttpsPort: 443,
 		FastCGI: service.FastCGI{
@@ -26,7 +26,7 @@ func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
 }
 
 func TestNginx_ValidateIncorrectInput(t *testing.T) {
-	nginx := service.Nginx{}
+	nginx := service.NginxConfig{}
 
 	errs := nginx.Validate()
 
@@ -48,7 +48,7 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 }
 
 func TestNginx_ValidateCorrectInput(t *testing.T) {
-	nginx := service.Nginx{
+	nginx := service.NginxConfig{
 		HttpPort: 80,
 		FastCGI: service.FastCGI{
 			PassPort:           9000,

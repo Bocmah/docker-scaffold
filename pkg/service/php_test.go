@@ -1,28 +1,29 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"reflect"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 func TestPHP_FillDefaultsIfNotSet(t *testing.T) {
-	php := service.PHP{}
+	php := service.PHPConfig{}
 
 	php.FillDefaultsIfNotSet()
 
-	want := service.PHP{
-		Version: "7.4",
+	want := service.PHPConfig{
+		Version:    "7.4",
 		Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd"},
 	}
 
 	if !reflect.DeepEqual(php, want) {
-		t.Errorf("PHP FillDefaultsIfNotSet incorrect defaults. Want %v, got %v", want, php)
+		t.Errorf("PHPConfig FillDefaultsIfNotSet incorrect defaults. Want %v, got %v", want, php)
 	}
 }
 
 func TestPHP_AddDatabaseExtension(t *testing.T) {
-	php := service.PHP{Version: "7.4", Extensions: []string{}}
+	php := service.PHPConfig{Version: "7.4", Extensions: []string{}}
 
 	php.AddDatabaseExtension(service.MySQL)
 
@@ -56,14 +57,14 @@ func TestPHP_AddDatabaseExtension(t *testing.T) {
 }
 
 func TestPHP_ValidateIncorrectInput(t *testing.T) {
-	php := service.PHP{}
+	php := service.PHPConfig{}
 
 	errs := php.Validate()
 
 	if errs != nil {
 		res := validationResult{
-			wantErrs: []string{"PHP version is required"},
-			actualErrs: errs,
+			wantErrs:     []string{"PHPConfig version is required"},
+			actualErrs:   errs,
 			validatedVal: php,
 		}
 
@@ -74,7 +75,7 @@ func TestPHP_ValidateIncorrectInput(t *testing.T) {
 }
 
 func TestPHP_ValidateCorrectInput(t *testing.T) {
-	php := service.PHP{Version: "7.4"}
+	php := service.PHPConfig{Version: "7.4"}
 
 	errs := php.Validate()
 
@@ -82,11 +83,11 @@ func TestPHP_ValidateCorrectInput(t *testing.T) {
 }
 
 func TestPHP_IsEmpty(t *testing.T) {
-	if !(&service.PHP{}).IsEmpty() {
-		t.Errorf("Failed to assert that empty PHP service is actually empty")
+	if !(&service.PHPConfig{}).IsEmpty() {
+		t.Errorf("Failed to assert that empty PHPConfig service is actually empty")
 	}
 
-	if (&service.PHP{Version: "7.4"}).IsEmpty() {
-		t.Errorf("Failed to assert that non-empty PHP service is actually non-empty")
+	if (&service.PHPConfig{Version: "7.4"}).IsEmpty() {
+		t.Errorf("Failed to assert that non-empty PHPConfig service is actually non-empty")
 	}
 }

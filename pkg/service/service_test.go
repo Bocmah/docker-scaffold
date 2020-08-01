@@ -23,11 +23,11 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 	}
 
 	conf = &service.ServicesConfig{
-		PHP: &service.PHP{
+		PHP: &service.PHPConfig{
 			Version:    "7.4",
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 		},
-		Nginx: &service.Nginx{
+		Nginx: &service.NginxConfig{
 			HttpPort:   80,
 			ServerName: "docker-scaffold",
 			FastCGI: service.FastCGI{
@@ -35,10 +35,10 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 				ReadTimeoutSeconds: 60,
 			},
 		},
-		NodeJS: &service.NodeJS{
+		NodeJS: &service.NodeJSConfig{
 			Version: "10",
 		},
-		Database: &service.Database{
+		Database: &service.DatabaseConfig{
 			System:  service.MySQL,
 			Version: "5.7",
 			Name:    "docker-scaffold",

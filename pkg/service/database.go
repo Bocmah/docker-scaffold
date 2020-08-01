@@ -31,7 +31,7 @@ type Credentials struct {
 	RootPassword string `yaml:"rootPassword"`
 }
 
-type Database struct {
+type DatabaseConfig struct {
 	System      SupportedSystem
 	Version     string
 	Name        string
@@ -39,7 +39,7 @@ type Database struct {
 	Credentials `yaml:",inline"`
 }
 
-func (d *Database) FillDefaultsIfNotSet() {
+func (d *DatabaseConfig) FillDefaultsIfNotSet() {
 	if d.System == "" {
 		d.System = MySQL
 	}
@@ -53,7 +53,7 @@ func (d *Database) FillDefaultsIfNotSet() {
 	}
 }
 
-func (d *Database) Validate() error {
+func (d *DatabaseConfig) Validate() error {
 	errors := &ValidationErrors{}
 
 	if d.System != MySQL && d.System != PostgreSQL {
@@ -61,11 +61,11 @@ func (d *Database) Validate() error {
 	}
 
 	if d.Port == 0 {
-		errors.Add("Database port is required")
+		errors.Add("DatabaseConfig port is required")
 	}
 
 	if d.RootPassword == "" {
-		errors.Add("Database root password is required")
+		errors.Add("DatabaseConfig root password is required")
 	}
 
 	if errors.IsEmpty() {
@@ -75,9 +75,9 @@ func (d *Database) Validate() error {
 	return errors
 }
 
-func (d *Database) String() string {
+func (d *DatabaseConfig) String() string {
 	return fmt.Sprintf(
-		"Database{System: %v, Version: %s, Name: %s, HttpPort: %d, Username: %s, Password: %s, RootPassword: %s}",
+		"DatabaseConfig{System: %v, Version: %s, Name: %s, HttpPort: %d, Username: %s, Password: %s, RootPassword: %s}",
 		d.System,
 		d.Version,
 		d.Name,

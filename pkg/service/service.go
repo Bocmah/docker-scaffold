@@ -3,10 +3,10 @@ package service
 import "fmt"
 
 type ServicesConfig struct {
-	PHP      *PHP
-	NodeJS   *NodeJS
-	Nginx    *Nginx
-	Database *Database
+	PHP      *PHPConfig
+	NodeJS   *NodeJSConfig
+	Nginx    *NginxConfig
+	Database *DatabaseConfig
 }
 
 func (s *ServicesConfig) FillDefaultsIfNotSet() {
@@ -47,11 +47,11 @@ func (s *ServicesConfig) IsPresent(service string) bool {
 	case "php":
 		return s.PHP != nil && !s.PHP.IsEmpty()
 	case "nodejs":
-		return s.NodeJS != nil && !(*s.NodeJS == NodeJS{})
+		return s.NodeJS != nil && !(*s.NodeJS == NodeJSConfig{})
 	case "nginx":
-		return s.Nginx != nil && !(*s.Nginx == Nginx{})
+		return s.Nginx != nil && !(*s.Nginx == NginxConfig{})
 	case "database":
-		return s.Database != nil && !(*s.Database == Database{})
+		return s.Database != nil && !(*s.Database == DatabaseConfig{})
 	default:
 		return false
 	}
@@ -59,7 +59,7 @@ func (s *ServicesConfig) IsPresent(service string) bool {
 
 func (s *ServicesConfig) String() string {
 	return fmt.Sprintf(
-		"ServicesConfig{PHP: %v, NodeJS: %v, Nginx: %v, Database: %v}",
+		"ServicesConfig{PHPConfig: %v, NodeJSConfig: %v, NginxConfig: %v, DatabaseConfig: %v}",
 		s.PHP,
 		s.NodeJS,
 		s.Nginx,

@@ -1,9 +1,10 @@
 package service_test
 
 import (
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 	"strings"
 	"testing"
+
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
 type validationResult struct {
@@ -28,11 +29,11 @@ func failTestOnErrorsOnCorrectInput(errs error, t *testing.T) {
 }
 
 func TestDatabase_FillDefaultsIfNotSet(t *testing.T) {
-	db := service.Database{}
+	db := service.DatabaseConfig{}
 
 	db.FillDefaultsIfNotSet()
 
-	want := service.Database{
+	want := service.DatabaseConfig{
 		System:  service.MySQL,
 		Port:    3306,
 		Version: "8.0",
@@ -44,7 +45,7 @@ func TestDatabase_FillDefaultsIfNotSet(t *testing.T) {
 }
 
 func TestDatabase_ValidateIncorrectInput(t *testing.T) {
-	db := service.Database{System: "Unsupported"}
+	db := service.DatabaseConfig{System: "Unsupported"}
 
 	errs := db.Validate()
 
@@ -52,8 +53,8 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 		res := validationResult{
 			wantErrs: []string{
 				"Unsupported database system",
-				"Database port is required",
-				"Database root password is required",
+				"DatabaseConfig port is required",
+				"DatabaseConfig root password is required",
 			},
 			actualErrs:   errs,
 			validatedVal: db,
@@ -66,7 +67,7 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 }
 
 func TestDatabase_ValidateCorrectInput(t *testing.T) {
-	db := service.Database{
+	db := service.DatabaseConfig{
 		System: service.MySQL,
 		Port:   3306,
 		Name:   "testdb",

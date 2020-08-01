@@ -3,6 +3,9 @@ package service
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
+
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 
 	"gopkg.in/yaml.v2"
 )
@@ -49,6 +52,34 @@ func (c *FullConfig) Validate() error {
 	}
 
 	return errors
+}
+
+func (c *FullConfig) MapToDockerCompose() *dockercompose.Config {
+	conf := dockercompose.Config{Version: "3.8"}
+
+	appName := strings.ReplaceAll(strings.ToLower(c.AppName), " ", "-")
+
+	network := dockercompose.Network{
+		Name:   fmt.Sprintf("%s-network", appName),
+		Driver: dockercompose.NetworkDriverBridge,
+	}
+
+	conf.Networks = dockercompose.Networks{&network}
+
+	vol := dockercompose.NamedVolume{
+		Name:   fmt.Sprintf("%s-data", appName),
+		Driver: dockercompose.VolumeDriverLocal,
+	}
+
+	conf.Volumes = dockercompose.NamedVolumes{&vol}
+
+	/*var services []*dockercompose.Service
+
+	if c.Services.IsPresent() {
+
+	}*/
+
+	return &conf
 }
 
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {

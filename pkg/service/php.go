@@ -2,12 +2,12 @@ package service
 
 import "fmt"
 
-type PHP struct {
+type PHPConfig struct {
 	Version    string
 	Extensions []string
 }
 
-func (p *PHP) FillDefaultsIfNotSet() {
+func (p *PHPConfig) FillDefaultsIfNotSet() {
 	if p.Version == "" {
 		p.Version = "7.4"
 	}
@@ -17,7 +17,7 @@ func (p *PHP) FillDefaultsIfNotSet() {
 	}
 }
 
-func (p *PHP) AddDatabaseExtension(db SupportedSystem) {
+func (p *PHPConfig) AddDatabaseExtension(db SupportedSystem) {
 	switch db {
 	case MySQL:
 		p.Extensions = append(p.Extensions, "pdo_mysql")
@@ -26,11 +26,11 @@ func (p *PHP) AddDatabaseExtension(db SupportedSystem) {
 	}
 }
 
-func (p *PHP) Validate() error {
+func (p *PHPConfig) Validate() error {
 	errors := &ValidationErrors{}
 
 	if p.Version == "" {
-		errors.Add("PHP version is required")
+		errors.Add("PHPConfig version is required")
 	}
 
 	if errors.IsEmpty() {
@@ -40,10 +40,10 @@ func (p *PHP) Validate() error {
 	return errors
 }
 
-func (p *PHP) String() string {
-	return fmt.Sprintf("PHP{Version: %s, Extensions: %v}", p.Version, p.Extensions)
+func (p *PHPConfig) String() string {
+	return fmt.Sprintf("PHPConfig{Version: %s, Extensions: %v}", p.Version, p.Extensions)
 }
 
-func (p *PHP) IsEmpty() bool {
+func (p *PHPConfig) IsEmpty() bool {
 	return p.Version == "" && len(p.Extensions) == 0
 }
