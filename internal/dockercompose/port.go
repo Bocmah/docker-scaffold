@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Ports []PortsMapping
+type Ports []*PortsMapping
 
 func (p Ports) Render() string {
 	length := len(p)
@@ -34,7 +34,7 @@ type PortsMapping struct {
 	Container int
 }
 
-func (m PortsMapping) Render() string {
+func (m *PortsMapping) Render() string {
 	if m.Container == 0 {
 		return ""
 	}

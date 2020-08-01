@@ -46,8 +46,8 @@ func TestNetworks_Render(t *testing.T) {
 	}{
 		"simple": {
 			input: dockercompose.Networks{
-				dockercompose.Network{Name: "test-data", Driver: dockercompose.NetworkDriverBridge},
-				dockercompose.Network{Name: "test-data-1", Driver: dockercompose.NetworkDriverHost},
+				&dockercompose.Network{Name: "test-data", Driver: dockercompose.NetworkDriverBridge},
+				&dockercompose.Network{Name: "test-data-1", Driver: dockercompose.NetworkDriverHost},
 			},
 			want: `networks:
   - test-data

@@ -10,7 +10,7 @@ type Build struct {
 	Dockerfile string
 }
 
-func (b Build) Render() string {
+func (b *Build) Render() string {
 	if b.Context == "" {
 		return ""
 	}

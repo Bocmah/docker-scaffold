@@ -10,17 +10,17 @@ import (
 
 func TestConfig_Render(t *testing.T) {
 	network := dockercompose.Network{Name: "test-network", Driver: dockercompose.NetworkDriverBridge}
-	networks := dockercompose.Networks{network}
+	networks := dockercompose.Networks{&network}
 	rootMount := dockercompose.Volume{Source: "/home/test/app", Target: "/var/www"}
 	namedVol := dockercompose.NamedVolume{Name: "test-data", Driver: dockercompose.VolumeDriverLocal}
 
 	php := dockercompose.Service{
 		Name: "php",
-		Build: dockercompose.Build{
+		Build: &dockercompose.Build{
 			Context:    "/home/test",
 			Dockerfile: "Dockerfile.test",
 		},
-		Image: dockercompose.Image{
+		Image: &dockercompose.Image{
 			Name: "php",
 			Tag:  "7.4",
 		},
@@ -31,42 +31,42 @@ func TestConfig_Render(t *testing.T) {
 			"SERVICE_NAME": "test-service",
 		},
 		Networks: networks,
-		Volumes:  dockercompose.Volumes{rootMount},
+		Volumes:  dockercompose.Volumes{&rootMount},
 	}
 
 	server := dockercompose.Service{
 		Name: "webserver",
-		Image: dockercompose.Image{
+		Image: &dockercompose.Image{
 			Name: "nginx",
 			Tag:  "alpine",
 		},
 		ContainerName: "webserver",
 		Restart:       dockercompose.RestartPolicyUnlessStopped,
 		Ports: dockercompose.Ports{
-			dockercompose.PortsMapping{Container: 80, Host: 80},
-			dockercompose.PortsMapping{Container: 443, Host: 443},
+			&dockercompose.PortsMapping{Container: 80, Host: 80},
+			&dockercompose.PortsMapping{Container: 443, Host: 443},
 		},
 		Networks: networks,
-		Volumes:  dockercompose.Volumes{rootMount, dockercompose.Volume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"}},
+		Volumes:  dockercompose.Volumes{&rootMount, &dockercompose.Volume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"}},
 	}
 
 	db := dockercompose.Service{
 		Name: "db",
-		Image: dockercompose.Image{
+		Image: &dockercompose.Image{
 			Name: "mysql",
 			Tag:  "5.7.22",
 		},
 		ContainerName: "db",
 		Restart:       dockercompose.RestartPolicyUnlessStopped,
 		Ports: dockercompose.Ports{
-			dockercompose.PortsMapping{Container: 3306, Host: 3306},
+			&dockercompose.PortsMapping{Container: 3306, Host: 3306},
 		},
 		Environment: dockercompose.Environment{
 			"MYSQL_ROOT_PASSWORD": "secret",
 		},
 		Networks: networks,
 		Volumes: dockercompose.Volumes{
-			dockercompose.Volume{Source: namedVol.Name, Target: "/var/lib/mysql"},
+			&dockercompose.Volume{Source: namedVol.Name, Target: "/var/lib/mysql"},
 		},
 	}
 

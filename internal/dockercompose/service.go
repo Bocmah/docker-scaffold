@@ -1,29 +1,9 @@
 package dockercompose
 
 import (
-	"bufio"
 	"fmt"
 	"strings"
 )
-
-type NestingLevel int
-
-func (n NestingLevel) ApplyTo(str string) string {
-	if n <= 0 {
-		return str
-	}
-
-	spaces := strings.Repeat(" ", int(n)*2)
-	scanner := bufio.NewScanner(strings.NewReader(str))
-
-	var lines []string
-
-	for scanner.Scan() {
-		lines = append(lines, spaces+scanner.Text())
-	}
-
-	return strings.Join(lines, "\n")
-}
 
 type renderableItem interface {
 	Render() string
@@ -31,8 +11,8 @@ type renderableItem interface {
 
 type Service struct {
 	Name          string
-	Build         Build
-	Image         Image
+	Build         *Build
+	Image         *Image
 	ContainerName string
 	WorkingDir    string
 	Restart       RestartPolicy
@@ -42,7 +22,7 @@ type Service struct {
 	Volumes       Volumes
 }
 
-func (s Service) Render() string {
+func (s *Service) Render() string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("%s:", s.Name))
 
@@ -58,7 +38,17 @@ func (s Service) Render() string {
 		sb.WriteString(nesting.ApplyTo(fmt.Sprintf("working_dir: %s", s.WorkingDir)))
 	}
 
-	renderables := []renderableItem{s.Build, s.Image, s.Restart, s.Ports, s.Environment, s.Networks, s.Volumes}
+	var renderables []renderableItem
+
+	if s.Build != nil {
+		renderables = append(renderables, s.Build)
+	}
+
+	if s.Image != nil {
+		renderables = append(renderables, s.Image)
+	}
+
+	renderables = append(renderables, s.Restart, s.Ports, s.Environment, s.Networks, s.Volumes)
 
 	for _, r := range renderables {
 		rendered := r.Render()

@@ -16,7 +16,7 @@ type Volume struct {
 	Target string
 }
 
-func (v Volume) String() string {
+func (v *Volume) String() string {
 	if v.Target == "" {
 		return ""
 	}
@@ -24,7 +24,7 @@ func (v Volume) String() string {
 	return Mapping(v.Source, v.Target)
 }
 
-type Volumes []Volume
+type Volumes []*Volume
 
 func (v Volumes) Render() string {
 	length := len(v)
@@ -52,7 +52,7 @@ type NamedVolume struct {
 	Driver VolumeDriver
 }
 
-func (v NamedVolume) Render() string {
+func (v *NamedVolume) Render() string {
 	if v.Name == "" || v.Driver == "" {
 		return ""
 	}

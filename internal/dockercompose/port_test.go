@@ -33,14 +33,14 @@ func TestPorts_Render(t *testing.T) {
 		want  string
 	}{
 		"one mapping": {
-			input: dockercompose.Ports{dockercompose.PortsMapping{Host: 90, Container: 9000}},
+			input: dockercompose.Ports{&dockercompose.PortsMapping{Host: 90, Container: 9000}},
 			want: `ports:
   - "90:9000"`,
 		},
 		"two mappings": {
 			input: dockercompose.Ports{
-				dockercompose.PortsMapping{Host: 80, Container: 8080},
-				dockercompose.PortsMapping{Host: 3000, Container: 3000},
+				&dockercompose.PortsMapping{Host: 80, Container: 8080},
+				&dockercompose.PortsMapping{Host: 3000, Container: 3000},
 			},
 			want: `ports:
   - "80:8080"

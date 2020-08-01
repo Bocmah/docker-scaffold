@@ -84,8 +84,8 @@ func TestVolumes_Render(t *testing.T) {
 	}{
 		"simple": {
 			input: dockercompose.Volumes{
-				dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
-				dockercompose.Volume{Target: "/var/test"},
+				&dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
+				&dockercompose.Volume{Target: "/var/test"},
 			},
 			want: `volumes:
   - /home/test:/var/test

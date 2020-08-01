@@ -20,7 +20,7 @@ type Network struct {
 	Driver NetworkDriver
 }
 
-func (n Network) Render() string {
+func (n *Network) Render() string {
 	if n.Name == "" || n.Driver == "" {
 		return ""
 	}
@@ -28,7 +28,7 @@ func (n Network) Render() string {
 	return fmt.Sprintf("%s:\n  driver: %s", n.Name, n.Driver)
 }
 
-type Networks []Network
+type Networks []*Network
 
 func (n Networks) Render() string {
 	length := len(n)
