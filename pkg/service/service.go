@@ -2,6 +2,30 @@ package service
 
 import "fmt"
 
+type SupportedService int
+
+func (s SupportedService) String() string {
+	if s < PHP || s > Database {
+		return "Unknown"
+	}
+
+	services := [...]string{
+		"PHP",
+		"NodeJS",
+		"Nginx",
+		"Database",
+	}
+
+	return services[s-1]
+}
+
+const (
+	PHP SupportedService = iota + 1
+	NodeJS
+	Nginx
+	Database
+)
+
 type ServicesConfig struct {
 	PHP      *PHPConfig
 	NodeJS   *NodeJSConfig
@@ -42,15 +66,15 @@ func (s *ServicesConfig) Validate() error {
 	return errors
 }
 
-func (s *ServicesConfig) IsPresent(service string) bool {
+func (s *ServicesConfig) IsPresent(service SupportedService) bool {
 	switch service {
-	case "php":
+	case PHP:
 		return s.PHP != nil && !s.PHP.IsEmpty()
-	case "nodejs":
+	case NodeJS:
 		return s.NodeJS != nil && !(*s.NodeJS == NodeJSConfig{})
-	case "nginx":
+	case Nginx:
 		return s.Nginx != nil && !(*s.Nginx == NginxConfig{})
-	case "database":
+	case Database:
 		return s.Database != nil && !(*s.Database == DatabaseConfig{})
 	default:
 		return false

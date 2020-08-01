@@ -9,11 +9,11 @@ import (
 func TestServicesConfig_IsPresent(t *testing.T) {
 	conf := &service.ServicesConfig{}
 
-	services := map[string]bool{
-		"php":      false,
-		"nodejs":   false,
-		"nginx":    false,
-		"database": false,
+	services := map[service.SupportedService]bool{
+		service.PHP:      false,
+		service.NodeJS:   false,
+		service.Nginx:    false,
+		service.Database: false,
 	}
 
 	for s, expectedPresent := range services {
@@ -51,11 +51,11 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 		},
 	}
 
-	services = map[string]bool{
-		"php":      true,
-		"nodejs":   true,
-		"nginx":    true,
-		"database": true,
+	services = map[service.SupportedService]bool{
+		service.PHP:      true,
+		service.NodeJS:   true,
+		service.Nginx:    true,
+		service.Database: true,
 	}
 
 	for s, expectedPresent := range services {
