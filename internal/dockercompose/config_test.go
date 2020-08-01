@@ -10,7 +10,7 @@ import (
 
 func TestConfig_Render(t *testing.T) {
 	network := dockercompose.Network{Name: "test-network", Driver: dockercompose.NetworkDriverBridge}
-	networks := dockercompose.Networks{&network}
+	networks := dockercompose.ServiceNetworks{&network}
 	rootMount := dockercompose.Volume{Source: "/home/test/app", Target: "/var/www"}
 	namedVol := dockercompose.NamedVolume{Name: "test-data", Driver: dockercompose.VolumeDriverLocal}
 
@@ -31,7 +31,7 @@ func TestConfig_Render(t *testing.T) {
 			"SERVICE_NAME": "test-service",
 		},
 		Networks: networks,
-		Volumes:  dockercompose.Volumes{&rootMount},
+		Volumes:  dockercompose.ServiceVolumes{&rootMount},
 	}
 
 	server := dockercompose.Service{
@@ -47,7 +47,7 @@ func TestConfig_Render(t *testing.T) {
 			&dockercompose.PortsMapping{Container: 443, Host: 443},
 		},
 		Networks: networks,
-		Volumes:  dockercompose.Volumes{&rootMount, &dockercompose.Volume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"}},
+		Volumes:  dockercompose.ServiceVolumes{&rootMount, &dockercompose.Volume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"}},
 	}
 
 	db := dockercompose.Service{
@@ -65,7 +65,7 @@ func TestConfig_Render(t *testing.T) {
 			"MYSQL_ROOT_PASSWORD": "secret",
 		},
 		Networks: networks,
-		Volumes: dockercompose.Volumes{
+		Volumes: dockercompose.ServiceVolumes{
 			&dockercompose.Volume{Source: namedVol.Name, Target: "/var/lib/mysql"},
 		},
 	}

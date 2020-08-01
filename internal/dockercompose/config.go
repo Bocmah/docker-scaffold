@@ -12,7 +12,7 @@ type Config struct {
 	Volumes  []*NamedVolume
 }
 
-func (c Config) Render() string {
+func (c *Config) Render() string {
 	if c.Version == "" || len(c.Services) == 0 {
 		return ""
 	}

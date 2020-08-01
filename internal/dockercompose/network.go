@@ -28,9 +28,9 @@ func (n *Network) Render() string {
 	return fmt.Sprintf("%s:\n  driver: %s", n.Name, n.Driver)
 }
 
-type Networks []*Network
+type ServiceNetworks []*Network
 
-func (n Networks) Render() string {
+func (n ServiceNetworks) Render() string {
 	length := len(n)
 
 	if length == 0 {

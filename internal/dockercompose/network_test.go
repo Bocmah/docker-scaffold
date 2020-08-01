@@ -41,11 +41,11 @@ func TestNetwork_String(t *testing.T) {
 
 func TestNetworks_Render(t *testing.T) {
 	tests := map[string]struct {
-		input dockercompose.Networks
+		input dockercompose.ServiceNetworks
 		want  string
 	}{
 		"simple": {
-			input: dockercompose.Networks{
+			input: dockercompose.ServiceNetworks{
 				&dockercompose.Network{Name: "test-data", Driver: dockercompose.NetworkDriverBridge},
 				&dockercompose.Network{Name: "test-data-1", Driver: dockercompose.NetworkDriverHost},
 			},
@@ -53,7 +53,7 @@ func TestNetworks_Render(t *testing.T) {
   - test-data
   - test-data-1`},
 		"empty": {
-			input: dockercompose.Networks{},
+			input: dockercompose.ServiceNetworks{},
 			want:  "",
 		},
 	}

@@ -18,8 +18,8 @@ type Service struct {
 	Restart       RestartPolicy
 	Ports         Ports
 	Environment   Environment
-	Networks      Networks
-	Volumes       Volumes
+	Networks      ServiceNetworks
+	Volumes       ServiceVolumes
 }
 
 func (s *Service) Render() string {

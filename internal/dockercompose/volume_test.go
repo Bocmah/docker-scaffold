@@ -79,11 +79,11 @@ func TestVolume_String(t *testing.T) {
 
 func TestVolumes_Render(t *testing.T) {
 	tests := map[string]struct {
-		input dockercompose.Volumes
+		input dockercompose.ServiceVolumes
 		want  string
 	}{
 		"simple": {
-			input: dockercompose.Volumes{
+			input: dockercompose.ServiceVolumes{
 				&dockercompose.Volume{Source: "/home/test", Target: "/var/test"},
 				&dockercompose.Volume{Target: "/var/test"},
 			},
@@ -91,7 +91,7 @@ func TestVolumes_Render(t *testing.T) {
   - /home/test:/var/test
   - /var/test`},
 		"empty": {
-			input: dockercompose.Volumes{},
+			input: dockercompose.ServiceVolumes{},
 			want:  "",
 		},
 	}

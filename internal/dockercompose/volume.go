@@ -24,9 +24,9 @@ func (v *Volume) String() string {
 	return Mapping(v.Source, v.Target)
 }
 
-type Volumes []*Volume
+type ServiceVolumes []*Volume
 
-func (v Volumes) Render() string {
+func (v ServiceVolumes) Render() string {
 	length := len(v)
 
 	if length == 0 {

@@ -25,10 +25,10 @@ func TestService_Render(t *testing.T) {
 		Environment: dockercompose.Environment{
 			"SERVICE_NAME": "test-service",
 		},
-		Networks: dockercompose.Networks{
+		Networks: dockercompose.ServiceNetworks{
 			&dockercompose.Network{Name: "test-network", Driver: dockercompose.NetworkDriverBridge},
 		},
-		Volumes: dockercompose.Volumes{
+		Volumes: dockercompose.ServiceVolumes{
 			&dockercompose.Volume{Source: "/home/test/app", Target: "/var/www"},
 		},
 	}
