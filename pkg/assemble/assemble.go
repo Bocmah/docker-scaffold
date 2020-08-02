@@ -18,6 +18,8 @@ func NewServiceAssembler(s service.SupportedService) ServiceAssembler {
 		return nginxAssembler()
 	case service.Database:
 		return databaseAssembler()
+	case service.NodeJS:
+		return nodeJSAssembler()
 	default:
 		return unknownAssembler()
 	}
@@ -64,13 +66,7 @@ func phpAssembler() ServiceAssembler {
 			}
 		}
 
-		if len(options.volumes) != 0 {
-			s.Volumes = append(s.Volumes, options.volumes...)
-		}
-
-		if len(options.networks) != 0 {
-			s.Networks = options.networks
-		}
+		applyMergeables(&options, &s)
 
 		return &s
 	}
@@ -123,13 +119,7 @@ func nginxAssembler() ServiceAssembler {
 			},
 		}
 
-		if len(options.volumes) != 0 {
-			s.Volumes = append(s.Volumes, options.volumes...)
-		}
-
-		if len(options.networks) != 0 {
-			s.Networks = append(s.Networks, options.networks...)
-		}
+		applyMergeables(&options, &s)
 
 		return &s
 	}
@@ -162,23 +152,49 @@ func databaseAssembler() ServiceAssembler {
 			},
 		}
 
-		if len(options.volumes) != 0 {
-			s.Volumes = append(s.Volumes, options.volumes...)
+		applyMergeables(&options, &s)
+
+		return &s
+	}
+}
+
+func nodeJSAssembler() ServiceAssembler {
+	return func(conf *service.FullConfig, opts ...Option) *dockercompose.Service {
+		if !conf.Services.IsPresent(service.NodeJS) {
+			return nil
 		}
 
-		if len(options.networks) != 0 {
-			s.Networks = append(s.Networks, options.networks...)
+		options := options{
+			dockerfilePath: "",
 		}
 
-		if len(options.environment) != 0 {
-			if len(s.Environment) == 0 {
-				s.Environment = dockercompose.Environment{}
+		for _, o := range opts {
+			o.apply(&options)
+		}
+
+		workDir := "/opt"
+
+		s := dockercompose.Service{
+			Name:          "nodejs",
+			ContainerName: "nodejs",
+			Volumes: dockercompose.ServiceVolumes{
+				&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: workDir},
+			},
+		}
+
+		if options.dockerfilePath != "" {
+			s.Build = &dockercompose.Build{
+				Context:    conf.ProjectRoot,
+				Dockerfile: options.dockerfilePath,
 			}
-
-			for variable, val := range options.environment {
-				s.Environment[variable] = val
+		} else {
+			s.Image = &dockercompose.Image{
+				Name: "node",
+				Tag:  "alpine",
 			}
 		}
+
+		applyMergeables(&options, &s)
 
 		return &s
 	}
@@ -192,4 +208,24 @@ func unknownAssembler() ServiceAssembler {
 
 func formatAppName(name string) string {
 	return strings.ReplaceAll(strings.ToLower(name), " ", "-")
+}
+
+func applyMergeables(opts *options, s *dockercompose.Service) {
+	if len(opts.volumes) != 0 {
+		s.Volumes = append(s.Volumes, opts.volumes...)
+	}
+
+	if len(opts.networks) != 0 {
+		s.Networks = append(s.Networks, opts.networks...)
+	}
+
+	if len(opts.environment) != 0 {
+		if len(s.Environment) == 0 {
+			s.Environment = dockercompose.Environment{}
+		}
+
+		for variable, val := range opts.environment {
+			s.Environment[variable] = val
+		}
+	}
 }

@@ -250,3 +250,59 @@ func TestDatabaseAssemble(t *testing.T) {
 		})
 	}
 }
+
+func TestNodeJSAssemble(t *testing.T) {
+	conf := dummyConf()
+
+	tests := map[string]struct {
+		opts []assemble.Option
+		want *dockercompose.Service
+	}{
+		"no options": {
+			want: &dockercompose.Service{
+				Name: "nodejs",
+				Image: &dockercompose.Image{
+					Name: "node",
+					Tag:  "alpine",
+				},
+				ContainerName: "nodejs",
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: "/opt"},
+				},
+			},
+		},
+		"with options": {
+			opts: []assemble.Option{
+				assemble.WithDockerfilePath("/home/test/app/.docker/node/Dockerfile"),
+				assemble.WithNetworks(dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				}),
+			},
+			want: &dockercompose.Service{
+				Name: "nodejs",
+				Build: &dockercompose.Build{
+					Context:    conf.ProjectRoot,
+					Dockerfile: "/home/test/app/.docker/node/Dockerfile",
+				},
+				ContainerName: "nodejs",
+				Networks: dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: "/opt"},
+				},
+			},
+		},
+	}
+
+	assembler := assemble.NewServiceAssembler(service.NodeJS)
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := assembler(conf, tc.opts...)
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("Database assembler mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
