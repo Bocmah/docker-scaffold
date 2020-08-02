@@ -170,8 +170,14 @@ func databaseAssembler() ServiceAssembler {
 			s.Networks = append(s.Networks, options.networks...)
 		}
 
-		for variable, val := range options.environment {
-			s.Environment[variable] = val
+		if len(options.environment) != 0 {
+			if len(s.Environment) == 0 {
+				s.Environment = dockercompose.Environment{}
+			}
+
+			for variable, val := range options.environment {
+				s.Environment[variable] = val
+			}
 		}
 
 		return &s

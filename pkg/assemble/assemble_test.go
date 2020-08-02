@@ -209,6 +209,10 @@ func TestDatabaseAssemble(t *testing.T) {
 				assemble.WithVolumes(dockercompose.ServiceVolumes{
 					&dockercompose.ServiceVolume{Source: "test-data", Target: "/var/lib/mysql"},
 				}),
+				assemble.WithEnvironment(dockercompose.Environment{
+					"MYSQL_DATABASE":      "test-db",
+					"MYSQL_ROOT_PASSWORD": "secret-root",
+				}),
 			},
 			want: &dockercompose.Service{
 				Name: "db",
@@ -220,6 +224,10 @@ func TestDatabaseAssemble(t *testing.T) {
 				Restart:       dockercompose.RestartPolicyUnlessStopped,
 				Ports: dockercompose.Ports{
 					&dockercompose.PortsMapping{Host: 3306, Container: 3306},
+				},
+				Environment: dockercompose.Environment{
+					"MYSQL_DATABASE":      "test-db",
+					"MYSQL_ROOT_PASSWORD": "secret-root",
 				},
 				Networks: dockercompose.ServiceNetworks{
 					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
