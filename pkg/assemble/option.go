@@ -4,6 +4,7 @@ import "github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 
 type options struct {
 	dockerfilePath string
+	environment    dockercompose.Environment
 	networks       dockercompose.ServiceNetworks
 	volumes        dockercompose.ServiceVolumes
 }
@@ -20,6 +21,18 @@ func (dp dockerfilePathOption) apply(opts *options) {
 
 func WithDockerfilePath(path string) Option {
 	return dockerfilePathOption(path)
+}
+
+type environmentOption struct {
+	Environment dockercompose.Environment
+}
+
+func (e environmentOption) apply(opts *options) {
+	opts.environment = e.Environment
+}
+
+func WithEnvironment(env dockercompose.Environment) Option {
+	return environmentOption{Environment: env}
 }
 
 type networksOption struct {

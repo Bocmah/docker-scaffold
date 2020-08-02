@@ -105,7 +105,7 @@ func TestPhpAssemble(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got := assembler(conf, tc.opts...)
 			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Fatalf("assembler mismatch (-want +got):\n%s", diff)
+				t.Fatalf("PHP assembler mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -174,7 +174,70 @@ func TestNginxAssemble(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got := assembler(conf, tc.opts...)
 			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Fatalf("assembler mismatch (-want +got):\n%s", diff)
+				t.Fatalf("nginx assembler mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestDatabaseAssemble(t *testing.T) {
+	conf := dummyConf()
+
+	tests := map[string]struct {
+		opts []assemble.Option
+		want *dockercompose.Service
+	}{
+		"no options": {
+			want: &dockercompose.Service{
+				Name: "db",
+				Image: &dockercompose.Image{
+					Name: string(service.MySQL),
+					Tag:  "8.0",
+				},
+				ContainerName: "db",
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 3306, Container: 3306},
+				},
+			},
+		},
+		"with options": {
+			opts: []assemble.Option{
+				assemble.WithNetworks(dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				}),
+				assemble.WithVolumes(dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "test-data", Target: "/var/lib/mysql"},
+				}),
+			},
+			want: &dockercompose.Service{
+				Name: "db",
+				Image: &dockercompose.Image{
+					Name: string(service.MySQL),
+					Tag:  "8.0",
+				},
+				ContainerName: "db",
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 3306, Container: 3306},
+				},
+				Networks: dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "test-data", Target: "/var/lib/mysql"},
+				},
+			},
+		},
+	}
+
+	assembler := assemble.NewServiceAssembler(service.Database)
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := assembler(conf, tc.opts...)
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("Database assembler mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

@@ -16,6 +16,8 @@ func NewServiceAssembler(s service.SupportedService) ServiceAssembler {
 		return phpAssembler()
 	case service.Nginx:
 		return nginxAssembler()
+	case service.Database:
+		return databaseAssembler()
 	default:
 		return unknownAssembler()
 	}
@@ -60,6 +62,10 @@ func phpAssembler() ServiceAssembler {
 				Name: "php",
 				Tag:  fmt.Sprintf("%s-fpm", conf.Services.PHP.Version),
 			}
+		}
+
+		if len(options.volumes) != 0 {
+			s.Volumes = append(s.Volumes, options.volumes...)
 		}
 
 		if len(options.networks) != 0 {
@@ -122,7 +128,50 @@ func nginxAssembler() ServiceAssembler {
 		}
 
 		if len(options.networks) != 0 {
-			s.Networks = options.networks
+			s.Networks = append(s.Networks, options.networks...)
+		}
+
+		return &s
+	}
+}
+
+func databaseAssembler() ServiceAssembler {
+	return func(conf *service.FullConfig, opts ...Option) *dockercompose.Service {
+		if !conf.Services.IsPresent(service.Database) {
+			return nil
+		}
+
+		options := options{
+			dockerfilePath: "",
+		}
+
+		for _, o := range opts {
+			o.apply(&options)
+		}
+
+		s := dockercompose.Service{
+			Name: "db",
+			Image: &dockercompose.Image{
+				Name: string(conf.Services.Database.System),
+				Tag:  conf.Services.Database.Version,
+			},
+			ContainerName: "db",
+			Restart:       dockercompose.RestartPolicyUnlessStopped,
+			Ports: dockercompose.Ports{
+				&dockercompose.PortsMapping{Host: conf.Services.Database.Port, Container: conf.Services.Database.Port},
+			},
+		}
+
+		if len(options.volumes) != 0 {
+			s.Volumes = append(s.Volumes, options.volumes...)
+		}
+
+		if len(options.networks) != 0 {
+			s.Networks = append(s.Networks, options.networks...)
+		}
+
+		for variable, val := range options.environment {
+			s.Environment[variable] = val
 		}
 
 		return &s
