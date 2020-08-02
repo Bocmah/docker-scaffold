@@ -4,7 +4,8 @@ import "github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 
 type options struct {
 	dockerfilePath string
-	sharedNetwork  *dockercompose.Network
+	networks       dockercompose.ServiceNetworks
+	volumes        dockercompose.ServiceVolumes
 }
 
 type Option interface {
@@ -21,14 +22,26 @@ func WithDockerfilePath(path string) Option {
 	return dockerfilePathOption(path)
 }
 
-type sharedNetworkOption struct {
-	Network *dockercompose.Network
+type networksOption struct {
+	Networks dockercompose.ServiceNetworks
 }
 
-func (sn sharedNetworkOption) apply(opts *options) {
-	opts.sharedNetwork = sn.Network
+func (n networksOption) apply(opts *options) {
+	opts.networks = n.Networks
 }
 
-func WithSharedNetwork(network *dockercompose.Network) Option {
-	return sharedNetworkOption{Network: network}
+func WithNetworks(networks dockercompose.ServiceNetworks) Option {
+	return networksOption{Networks: networks}
+}
+
+type volumesOption struct {
+	Volumes dockercompose.ServiceVolumes
+}
+
+func (v volumesOption) apply(opts *options) {
+	opts.volumes = v.Volumes
+}
+
+func WithVolumes(volumes dockercompose.ServiceVolumes) Option {
+	return volumesOption{Volumes: volumes}
 }

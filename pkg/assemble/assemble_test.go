@@ -25,8 +25,8 @@ func dummyConf() *service.FullConfig {
 				Version: "latest",
 			},
 			Nginx: &service.NginxConfig{
-				HttpPort:   80,
-				HttpsPort:  443,
+				HTTPPort:   80,
+				HTTPSPort:  443,
 				ServerName: "test-server",
 				FastCGI: service.FastCGI{
 					PassPort:           9000,
@@ -73,7 +73,9 @@ func TestPhpAssemble(t *testing.T) {
 		"with options": {
 			opts: []assemble.Option{
 				assemble.WithDockerfilePath("/home/test/app/.docker/php/Dockerfile"),
-				assemble.WithSharedNetwork(&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge}),
+				assemble.WithNetworks(dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				}),
 			},
 			want: &dockercompose.Service{
 				Name: "test-app",
@@ -98,6 +100,75 @@ func TestPhpAssemble(t *testing.T) {
 	}
 
 	assembler := assemble.NewServiceAssembler(service.PHP)
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := assembler(conf, tc.opts...)
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("assembler mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestNginxAssemble(t *testing.T) {
+	conf := dummyConf()
+
+	tests := map[string]struct {
+		opts []assemble.Option
+		want *dockercompose.Service
+	}{
+		"no options": {
+			want: &dockercompose.Service{
+				Name: "webserver",
+				Image: &dockercompose.Image{
+					Name: "nginx",
+					Tag:  "alpine",
+				},
+				ContainerName: "webserver",
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 80, Container: 80},
+					&dockercompose.PortsMapping{Host: 443, Container: 443},
+				},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "/home/test/app", Target: "/var/www"},
+				},
+			},
+		},
+		"with options": {
+			opts: []assemble.Option{
+				assemble.WithNetworks(dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				}),
+				assemble.WithVolumes(dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"},
+				}),
+			},
+			want: &dockercompose.Service{
+				Name: "webserver",
+				Image: &dockercompose.Image{
+					Name: "nginx",
+					Tag:  "alpine",
+				},
+				ContainerName: "webserver",
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 80, Container: 80},
+					&dockercompose.PortsMapping{Host: 443, Container: 443},
+				},
+				Networks: dockercompose.ServiceNetworks{
+					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
+				},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "/home/test/app", Target: "/var/www"},
+					&dockercompose.ServiceVolume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"},
+				},
+			},
+		},
+	}
+
+	assembler := assemble.NewServiceAssembler(service.Nginx)
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
