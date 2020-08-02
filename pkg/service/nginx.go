@@ -3,8 +3,8 @@ package service
 import "fmt"
 
 type NginxConfig struct {
-	HttpPort   int     `yaml:"httpPort"`
-	HttpsPort  int     `yaml:"httpsPort"`
+	HTTPPort   int     `yaml:"httpPort"`
+	HTTPSPort  int     `yaml:"httpsPort"`
 	ServerName string  `yaml:"serverName"`
 	FastCGI    FastCGI `yaml:"fastCGI"`
 }
@@ -15,12 +15,12 @@ type FastCGI struct {
 }
 
 func (n *NginxConfig) FillDefaultsIfNotSet() {
-	if n.HttpPort == 0 {
-		n.HttpPort = 80
+	if n.HTTPPort == 0 {
+		n.HTTPPort = 80
 	}
 
-	if n.HttpsPort == 0 {
-		n.HttpsPort = 443
+	if n.HTTPSPort == 0 {
+		n.HTTPSPort = 443
 	}
 
 	if n.FastCGI.PassPort == 0 {
@@ -35,7 +35,7 @@ func (n *NginxConfig) FillDefaultsIfNotSet() {
 func (n *NginxConfig) Validate() error {
 	errors := &ValidationErrors{}
 
-	if n.HttpPort == 0 {
+	if n.HTTPPort == 0 {
 		errors.Add("nginx port is required")
 	}
 
@@ -56,9 +56,9 @@ func (n *NginxConfig) Validate() error {
 
 func (n *NginxConfig) String() string {
 	return fmt.Sprintf(
-		"NginxConfig{HttpPort: %d, HttpsPort: %d, ServerName: %s, FastCGI: %v}",
-		n.HttpPort,
-		n.HttpsPort,
+		"NginxConfig{HTTPPort: %d, HTTPSPort: %d, ServerName: %s, FastCGI: %v}",
+		n.HTTPPort,
+		n.HTTPSPort,
 		n.ServerName,
 		n.FastCGI,
 	)

@@ -28,7 +28,7 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 		},
 		Nginx: &service.NginxConfig{
-			HttpPort:   80,
+			HTTPPort:   80,
 			ServerName: "docker-scaffold",
 			FastCGI: service.FastCGI{
 				PassPort:           9000,

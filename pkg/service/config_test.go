@@ -25,8 +25,8 @@ func TestLoadConfigFromFile(t *testing.T) {
 				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
 			},
 			Nginx: &service.NginxConfig{
-				HttpPort:   80,
-				HttpsPort:  443,
+				HTTPPort:   80,
+				HTTPSPort:  443,
 				ServerName: "test-server",
 				FastCGI: service.FastCGI{
 					PassPort:           9000,

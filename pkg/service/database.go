@@ -77,7 +77,7 @@ func (d *DatabaseConfig) Validate() error {
 
 func (d *DatabaseConfig) String() string {
 	return fmt.Sprintf(
-		"DatabaseConfig{System: %v, Version: %s, Name: %s, HttpPort: %d, Username: %s, Password: %s, RootPassword: %s}",
+		"DatabaseConfig{System: %v, Version: %s, Name: %s, HTTPPort: %d, Username: %s, Password: %s, RootPassword: %s}",
 		d.System,
 		d.Version,
 		d.Name,
