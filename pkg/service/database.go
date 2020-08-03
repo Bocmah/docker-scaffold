@@ -64,8 +64,12 @@ func (d *DatabaseConfig) Validate() error {
 		errors.Add("DatabaseConfig port is required")
 	}
 
-	if d.RootPassword == "" {
-		errors.Add("DatabaseConfig root password is required")
+	if d.System == MySQL && d.RootPassword == "" {
+		errors.Add("DatabaseConfig root password is required for MySQL")
+	}
+
+	if d.System == PostgreSQL && d.Password == "" {
+		errors.Add("DatabaseConfig password is required for PostgreSQL")
 	}
 
 	if errors.IsEmpty() {
@@ -86,4 +90,55 @@ func (d *DatabaseConfig) String() string {
 		d.Password,
 		d.RootPassword,
 	)
+}
+
+func (d *DatabaseConfig) Environment() map[string]string {
+	switch d.System {
+	case MySQL:
+		return d.mySQLEnvironment()
+	case PostgreSQL:
+		return d.postgreSQLEnvironment()
+	default:
+		return map[string]string{}
+	}
+}
+
+func (d *DatabaseConfig) mySQLEnvironment() map[string]string {
+	env := map[string]string{}
+
+	if d.RootPassword != "" {
+		env["MYSQL_ROOT_PASSWORD"] = d.RootPassword
+	}
+
+	if d.Name != "" {
+		env["MYSQL_DATABASE"] = d.Name
+	}
+
+	if d.Username != "" {
+		env["MYSQL_USER"] = d.Username
+	}
+
+	if d.Password != "" {
+		env["MYSQL_PASSWORD"] = d.Password
+	}
+
+	return env
+}
+
+func (d *DatabaseConfig) postgreSQLEnvironment() map[string]string {
+	env := map[string]string{}
+
+	if d.Name != "" {
+		env["POSTGRES_DB"] = d.Name
+	}
+
+	if d.Username != "" {
+		env["POSTGRES_USER"] = d.Username
+	}
+
+	if d.Password != "" {
+		env["POSTGRES_PASSWORD"] = d.Password
+	}
+
+	return env
 }

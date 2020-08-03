@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
@@ -28,7 +30,7 @@ func failTestOnErrorsOnCorrectInput(errs error, t *testing.T) {
 	}
 }
 
-func TestDatabase_FillDefaultsIfNotSet(t *testing.T) {
+func TestDatabaseConfig_FillDefaultsIfNotSet(t *testing.T) {
 	db := service.DatabaseConfig{}
 
 	db.FillDefaultsIfNotSet()
@@ -44,7 +46,7 @@ func TestDatabase_FillDefaultsIfNotSet(t *testing.T) {
 	}
 }
 
-func TestDatabase_ValidateIncorrectInput(t *testing.T) {
+func TestDatabaseConfig_ValidateIncorrectInput(t *testing.T) {
 	db := service.DatabaseConfig{System: "Unsupported"}
 
 	errs := db.Validate()
@@ -54,7 +56,6 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 			wantErrs: []string{
 				"Unsupported database system",
 				"DatabaseConfig port is required",
-				"DatabaseConfig root password is required",
 			},
 			actualErrs:   errs,
 			validatedVal: db,
@@ -66,7 +67,7 @@ func TestDatabase_ValidateIncorrectInput(t *testing.T) {
 	}
 }
 
-func TestDatabase_ValidateCorrectInput(t *testing.T) {
+func TestDatabaseConfig_ValidateCorrectInput(t *testing.T) {
 	db := service.DatabaseConfig{
 		System: service.MySQL,
 		Port:   3306,
@@ -79,4 +80,58 @@ func TestDatabase_ValidateCorrectInput(t *testing.T) {
 	errs := db.Validate()
 
 	failTestOnErrorsOnCorrectInput(errs, t)
+}
+
+func TestDatabaseConfig_Environment(t *testing.T) {
+	tests := map[string]struct {
+		conf *service.DatabaseConfig
+		want map[string]string
+	}{
+		"mysql": {
+			conf: &service.DatabaseConfig{
+				System:  service.MySQL,
+				Version: "8.0",
+				Name:    "test-db",
+				Port:    3306,
+				Credentials: service.Credentials{
+					Username:     "test-user",
+					Password:     "test-password",
+					RootPassword: "test-root-password",
+				},
+			},
+			want: map[string]string{
+				"MYSQL_USER":          "test-user",
+				"MYSQL_DATABASE":      "test-db",
+				"MYSQL_ROOT_PASSWORD": "test-root-password",
+				"MYSQL_PASSWORD":      "test-password",
+			},
+		},
+		"postgresql": {
+			conf: &service.DatabaseConfig{
+				System:  service.PostgreSQL,
+				Version: "12",
+				Name:    "test-db",
+				Port:    5432,
+				Credentials: service.Credentials{
+					Username: "test-user",
+					Password: "test-password",
+				},
+			},
+			want: map[string]string{
+				"POSTGRES_USER":     "test-user",
+				"POSTGRES_DB":       "test-db",
+				"POSTGRES_PASSWORD": "test-password",
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.conf.Environment()
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("conf.Environment() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }
