@@ -19,6 +19,15 @@ func (s SupportedService) String() string {
 	return services[s-1]
 }
 
+func SupportedServices() []SupportedService {
+	return []SupportedService{
+		PHP,
+		NodeJS,
+		Nginx,
+		Database,
+	}
+}
+
 const (
 	PHP SupportedService = iota + 1
 	NodeJS
@@ -79,6 +88,18 @@ func (s *ServicesConfig) IsPresent(service SupportedService) bool {
 	default:
 		return false
 	}
+}
+
+func (s *ServicesConfig) PresentServicesCount() int {
+	count := 0
+
+	for _, sup := range SupportedServices() {
+		if s.IsPresent(sup) {
+			count++
+		}
+	}
+
+	return count
 }
 
 func (s *ServicesConfig) String() string {

@@ -6,23 +6,8 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
-func TestServicesConfig_IsPresent(t *testing.T) {
-	conf := &service.ServicesConfig{}
-
-	services := map[service.SupportedService]bool{
-		service.PHP:      false,
-		service.NodeJS:   false,
-		service.Nginx:    false,
-		service.Database: false,
-	}
-
-	for s, expectedPresent := range services {
-		if conf.IsPresent(s) != expectedPresent {
-			t.Errorf("Service %s is present in empty configuration", s)
-		}
-	}
-
-	conf = &service.ServicesConfig{
+func dummyConfigWithAllServices() *service.ServicesConfig {
+	return &service.ServicesConfig{
 		PHP: &service.PHPConfig{
 			Version:    "7.4",
 			Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
@@ -50,6 +35,25 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 			},
 		},
 	}
+}
+
+func TestServicesConfig_IsPresent(t *testing.T) {
+	conf := &service.ServicesConfig{}
+
+	services := map[service.SupportedService]bool{
+		service.PHP:      false,
+		service.NodeJS:   false,
+		service.Nginx:    false,
+		service.Database: false,
+	}
+
+	for s, expectedPresent := range services {
+		if conf.IsPresent(s) != expectedPresent {
+			t.Errorf("Service %s is present in empty configuration", s)
+		}
+	}
+
+	conf = dummyConfigWithAllServices()
 
 	services = map[service.SupportedService]bool{
 		service.PHP:      true,
@@ -62,5 +66,39 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 		if conf.IsPresent(s) != expectedPresent {
 			t.Errorf("Service %s is expected to be present in configuration %v", s, *conf)
 		}
+	}
+}
+
+func TestServicesConfig_PresentServicesCount(t *testing.T) {
+	tests := map[string]struct {
+		input *service.ServicesConfig
+		want  int
+	}{
+		"all services": {
+			input: dummyConfigWithAllServices(),
+			want:  4,
+		},
+		"one service": {
+			input: &service.ServicesConfig{
+				PHP: &service.PHPConfig{
+					Version:    "7.4",
+					Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
+				},
+			},
+			want: 1,
+		},
+		"no services": {
+			input: &service.ServicesConfig{},
+			want:  0,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.PresentServicesCount()
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
 	}
 }
