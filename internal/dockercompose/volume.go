@@ -70,6 +70,14 @@ func (v *NamedVolume) Render() string {
 	return sb.String()
 }
 
+func (v *NamedVolume) ToServiceVolume() *ServiceVolume {
+	if v.Name == "" {
+		return nil
+	}
+
+	return &ServiceVolume{Target: v.Name}
+}
+
 type NamedVolumes []*NamedVolume
 
 func (v NamedVolumes) Render() string {
@@ -86,4 +94,18 @@ func (v NamedVolumes) Render() string {
 
 func (v NamedVolumes) IsEmpty() bool {
 	return len(v) == 0
+}
+
+func (v NamedVolumes) ToServiceVolumes() ServiceVolumes {
+	vols := ServiceVolumes{}
+
+	for _, vol := range v {
+		serviceVol := vol.ToServiceVolume()
+
+		if serviceVol != nil {
+			vols = append(vols, vol.ToServiceVolume())
+		}
+	}
+
+	return vols
 }

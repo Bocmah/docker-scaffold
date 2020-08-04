@@ -3,6 +3,8 @@ package dockercompose_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 )
 
@@ -101,6 +103,76 @@ func TestVolumes_Render(t *testing.T) {
 			got := tc.input.Render()
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestNamedVolume_ToServiceVolume(t *testing.T) {
+	tests := map[string]struct {
+		input *dockercompose.NamedVolume
+		want  *dockercompose.ServiceVolume
+	}{
+		"with name and driver": {
+			input: &dockercompose.NamedVolume{Name: "test-data", Driver: "local"},
+			want:  &dockercompose.ServiceVolume{Target: "test-data"},
+		},
+		"without name": {
+			input: &dockercompose.NamedVolume{Driver: "local"},
+			want:  nil,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.ToServiceVolume()
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Errorf("NamedVolume.ToServiceVolume() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestNamedVolumes_ToServiceVolumes(t *testing.T) {
+	tests := map[string]struct {
+		input dockercompose.NamedVolumes
+		want  dockercompose.ServiceVolumes
+	}{
+		"simple": {
+			input: dockercompose.NamedVolumes{
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal, Name: "test-data"},
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal, Name: "vol2"},
+			},
+			want: dockercompose.ServiceVolumes{
+				&dockercompose.ServiceVolume{Target: "test-data"},
+				&dockercompose.ServiceVolume{Target: "vol2"},
+			},
+		},
+		"with unnamed volumes": {
+			input: dockercompose.NamedVolumes{
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal, Name: "test-data"},
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal},
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal, Name: "vol3"},
+			},
+			want: dockercompose.ServiceVolumes{
+				&dockercompose.ServiceVolume{Target: "test-data"},
+				&dockercompose.ServiceVolume{Target: "vol3"},
+			},
+		},
+		"all unnamed volumes": {
+			input: dockercompose.NamedVolumes{
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal},
+				&dockercompose.NamedVolume{Driver: dockercompose.VolumeDriverLocal},
+			},
+			want: dockercompose.ServiceVolumes{},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.ToServiceVolumes()
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Errorf("NamedVolume.ToServiceVolumes() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
