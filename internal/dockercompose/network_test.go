@@ -3,6 +3,8 @@ package dockercompose_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 )
 
@@ -63,6 +65,33 @@ func TestNetworks_Render(t *testing.T) {
 			got := tc.input.Render()
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestNetworks_ToServiceNetworks(t *testing.T) {
+	tests := map[string]struct {
+		input dockercompose.Networks
+		want  dockercompose.ServiceNetworks
+	}{
+		"simple": {
+			input: dockercompose.Networks{
+				&dockercompose.Network{Driver: dockercompose.NetworkDriverBridge, Name: "test-network"},
+				&dockercompose.Network{Driver: dockercompose.NetworkDriverBridge, Name: "test-network2"},
+			},
+			want: dockercompose.ServiceNetworks{
+				&dockercompose.Network{Driver: dockercompose.NetworkDriverBridge, Name: "test-network"},
+				&dockercompose.Network{Driver: dockercompose.NetworkDriverBridge, Name: "test-network2"},
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.ToServiceNetworks()
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Errorf("NamedVolume.ToServiceNetworks() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

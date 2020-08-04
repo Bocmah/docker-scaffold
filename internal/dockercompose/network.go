@@ -68,3 +68,7 @@ func (n Networks) Render() string {
 func (n Networks) IsEmpty() bool {
 	return len(n) == 0
 }
+
+func (n Networks) ToServiceNetworks() ServiceNetworks {
+	return ServiceNetworks(n)
+}
