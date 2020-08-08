@@ -1,6 +1,9 @@
 package assemble
 
-import "github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+import (
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+)
 
 type options struct {
 	dockerfilePath string
@@ -11,6 +14,51 @@ type options struct {
 
 type Option interface {
 	apply(*options)
+}
+
+type optionsAssembler struct {
+	compose      *dockercompose.Config
+	serviceFiles map[service.SupportedService]ServiceFiles
+}
+
+func (o *optionsAssembler) assembleForService(service service.SupportedService) []Option {
+	var opts []Option
+
+	if len(o.compose.Volumes) != 0 {
+		opts = append(opts, WithVolumes(o.compose.Volumes.ToServiceVolumes()))
+	}
+
+	if len(o.compose.Networks) != 0 {
+		opts = append(opts, WithNetworks(o.compose.Networks.ToServiceNetworks()))
+	}
+
+	opts = append(opts, o.serviceFileOpts(service)...)
+
+	return opts
+}
+
+func (o *optionsAssembler) serviceFileOpts(service service.SupportedService) []Option {
+	files, ok := o.serviceFiles[service]
+
+	if !ok {
+		return nil
+	}
+
+	var opts []Option
+
+	if files.DockerfilePath != "" {
+		opts = append(opts, WithDockerfilePath(files.DockerfilePath))
+	}
+
+	if len(files.Configs) > 0 {
+		opts = append(opts, WithVolumes(files.Configs))
+	}
+
+	if len(files.Environment) > 0 {
+		opts = append(opts, WithEnvironment(files.Environment))
+	}
+
+	return opts
 }
 
 type dockerfilePathOption string
