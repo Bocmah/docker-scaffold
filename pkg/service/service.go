@@ -11,9 +11,9 @@ func (s SupportedService) String() string {
 
 	services := [...]string{
 		"PHP",
-		"NodeJS",
 		"Nginx",
 		"Database",
+		"NodeJS",
 	}
 
 	return services[s-1]
@@ -22,24 +22,24 @@ func (s SupportedService) String() string {
 func SupportedServices() []SupportedService {
 	return []SupportedService{
 		PHP,
-		NodeJS,
 		Nginx,
 		Database,
+		NodeJS,
 	}
 }
 
 const (
 	PHP SupportedService = iota + 1
-	NodeJS
 	Nginx
 	Database
+	NodeJS
 )
 
 type ServicesConfig struct {
 	PHP      *PHPConfig
-	NodeJS   *NodeJSConfig
 	Nginx    *NginxConfig
 	Database *DatabaseConfig
+	NodeJS   *NodeJSConfig
 }
 
 func (s *ServicesConfig) FillDefaultsIfNotSet() {

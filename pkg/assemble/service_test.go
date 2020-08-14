@@ -40,7 +40,7 @@ func dummyConf() *service.FullConfig {
 				Port:    3306,
 				Credentials: service.Credentials{
 					RootPassword: "secret-root",
-					Password:     "secret-user",
+					Password:     "secret-password",
 					Username:     "test-user",
 				},
 			},
@@ -269,6 +269,7 @@ func TestNodeJSAssemble(t *testing.T) {
 				Volumes: dockercompose.ServiceVolumes{
 					&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: "/opt"},
 				},
+				WorkingDir: "/opt",
 			},
 		},
 		"with options": {
@@ -291,6 +292,7 @@ func TestNodeJSAssemble(t *testing.T) {
 				Volumes: dockercompose.ServiceVolumes{
 					&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: "/opt"},
 				},
+				WorkingDir: "/opt",
 			},
 		},
 	}

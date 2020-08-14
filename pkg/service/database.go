@@ -4,24 +4,31 @@ import "fmt"
 
 type SupportedSystem string
 
+func (s SupportedSystem) DataPath() string {
+	return defaults[s].dataPath
+}
+
 const (
 	MySQL      SupportedSystem = "mysql"
 	PostgreSQL SupportedSystem = "posgresql"
 )
 
 type systemDefaults struct {
-	version string
-	port    int
+	version  string
+	port     int
+	dataPath string
 }
 
 var defaults = map[SupportedSystem]systemDefaults{
 	MySQL: {
-		version: "8.0",
-		port:    3306,
+		version:  "8.0",
+		port:     3306,
+		dataPath: "/var/lib/mysql",
 	},
 	PostgreSQL: {
-		version: "12.3",
-		port:    5432,
+		version:  "12.3",
+		port:     5432,
+		dataPath: "/var/lib/postgresql/data",
 	},
 }
 

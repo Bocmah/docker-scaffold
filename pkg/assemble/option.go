@@ -21,10 +21,10 @@ type optionsAssembler struct {
 	serviceFiles map[service.SupportedService]ServiceFiles
 }
 
-func (o *optionsAssembler) assembleForService(service service.SupportedService) []Option {
+func (o *optionsAssembler) assembleForService(serv service.SupportedService) []Option {
 	var opts []Option
 
-	if len(o.compose.Volumes) != 0 {
+	if len(o.compose.Volumes) != 0 && serv == service.Database {
 		opts = append(opts, WithVolumes(o.compose.Volumes.ToServiceVolumes()))
 	}
 
@@ -32,7 +32,7 @@ func (o *optionsAssembler) assembleForService(service service.SupportedService) 
 		opts = append(opts, WithNetworks(o.compose.Networks.ToServiceNetworks()))
 	}
 
-	opts = append(opts, o.serviceFileOpts(service)...)
+	opts = append(opts, o.serviceFileOpts(serv)...)
 
 	return opts
 }
@@ -50,8 +50,8 @@ func (o *optionsAssembler) serviceFileOpts(service service.SupportedService) []O
 		opts = append(opts, WithDockerfilePath(files.DockerfilePath))
 	}
 
-	if len(files.Configs) > 0 {
-		opts = append(opts, WithVolumes(files.Configs))
+	if len(files.Mounts) > 0 {
+		opts = append(opts, WithVolumes(files.Mounts))
 	}
 
 	if len(files.Environment) > 0 {

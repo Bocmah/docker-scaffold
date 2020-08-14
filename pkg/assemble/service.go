@@ -179,6 +179,7 @@ func nodeJSAssembler() ServiceAssembler {
 			Volumes: dockercompose.ServiceVolumes{
 				&dockercompose.ServiceVolume{Source: conf.ProjectRoot, Target: workDir},
 			},
+			WorkingDir: workDir,
 		}
 
 		if options.dockerfilePath != "" {
