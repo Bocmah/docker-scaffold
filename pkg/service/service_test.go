@@ -15,7 +15,7 @@ func dummyConfigWithAllServices() *service.ServicesConfig {
 		Nginx: &service.NginxConfig{
 			HTTPPort:   80,
 			ServerName: "docker-scaffold",
-			FastCGI: service.FastCGI{
+			FastCGI: &service.FastCGI{
 				PassPort:           9000,
 				ReadTimeoutSeconds: 60,
 			},

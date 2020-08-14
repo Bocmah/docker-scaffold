@@ -3,10 +3,10 @@ package service
 import "fmt"
 
 type NginxConfig struct {
-	HTTPPort   int     `yaml:"httpPort"`
-	HTTPSPort  int     `yaml:"httpsPort"`
-	ServerName string  `yaml:"serverName"`
-	FastCGI    FastCGI `yaml:"fastCGI"`
+	HTTPPort   int      `yaml:"httpPort"`
+	HTTPSPort  int      `yaml:"httpsPort"`
+	ServerName string   `yaml:"serverName"`
+	FastCGI    *FastCGI `yaml:"fastCGI"`
 }
 
 type FastCGI struct {
@@ -21,6 +21,10 @@ func (n *NginxConfig) FillDefaultsIfNotSet() {
 
 	if n.HTTPSPort == 0 {
 		n.HTTPSPort = 443
+	}
+
+	if n.FastCGI == nil {
+		n.FastCGI = &FastCGI{}
 	}
 
 	if n.FastCGI.PassPort == 0 {
@@ -39,11 +43,11 @@ func (n *NginxConfig) Validate() error {
 		errors.Add("nginx port is required")
 	}
 
-	if n.FastCGI.PassPort == 0 {
+	if n.FastCGI == nil {
+		errors.Add("nginx FastCGI pass port is required", "nginx FastCGI read timeout is required")
+	} else if n.FastCGI.PassPort == 0 {
 		errors.Add("nginx FastCGI pass port is required")
-	}
-
-	if n.FastCGI.ReadTimeoutSeconds == 0 {
+	} else if n.FastCGI.ReadTimeoutSeconds == 0 {
 		errors.Add("nginx FastCGI read timeout is required")
 	}
 

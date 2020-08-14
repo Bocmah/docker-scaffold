@@ -28,7 +28,7 @@ func TestLoadConfigFromFile(t *testing.T) {
 				HTTPPort:   80,
 				HTTPSPort:  443,
 				ServerName: "test-server",
-				FastCGI: service.FastCGI{
+				FastCGI: &service.FastCGI{
 					PassPort:           9000,
 					ReadTimeoutSeconds: 60,
 				},

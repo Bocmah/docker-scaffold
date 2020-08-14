@@ -3,6 +3,8 @@ package service_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
@@ -14,14 +16,14 @@ func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
 	want := service.NginxConfig{
 		HTTPPort:  80,
 		HTTPSPort: 443,
-		FastCGI: service.FastCGI{
+		FastCGI: &service.FastCGI{
 			PassPort:           9000,
 			ReadTimeoutSeconds: 60,
 		},
 	}
 
-	if nginx != want {
-		t.Errorf("Incorrect defaults, want %v, got %v", want, nginx)
+	if diff := cmp.Diff(want, nginx); diff != "" {
+		t.Fatalf("Incorrect defaults (-want +got):\n%s", diff)
 	}
 }
 
@@ -50,7 +52,7 @@ func TestNginx_ValidateIncorrectInput(t *testing.T) {
 func TestNginx_ValidateCorrectInput(t *testing.T) {
 	nginx := service.NginxConfig{
 		HTTPPort: 80,
-		FastCGI: service.FastCGI{
+		FastCGI: &service.FastCGI{
 			PassPort:           9000,
 			ReadTimeoutSeconds: 60,
 		},
