@@ -7,14 +7,14 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
-func RenderTemplatesFromConfiguration(conf *service.FullConfig) (RenderedServices, error) {
+func RenderTemplatesFromConfiguration(conf *service.FullConfig) (*RenderedServices, error) {
 	outputPath := getOutputPath(conf)
 	renderables := newRenderableServices("../../tmpl", outputPath)
 
 	rendered, err := renderables.render(conf)
 
 	if err != nil {
-		return RenderedServices{}, fmt.Errorf("render renderable services: %s", err)
+		return nil, fmt.Errorf("render renderable services: %s", err)
 	}
 
 	return rendered, nil

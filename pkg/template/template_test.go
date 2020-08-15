@@ -72,7 +72,7 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		t.Fatal(absErr)
 	}
 
-	wantRendered := template.RenderedServices{
+	wantRendered := &template.RenderedServices{
 		Services: map[service.SupportedService]*template.Rendered{
 			service.PHP: {
 				Path:        outputPath + string(os.PathSeparator) + "php/Dockerfile",
@@ -106,7 +106,7 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 	}
 }
 
-func compareRenderedWithExpected(renderedServices template.RenderedServices, testFiles map[service.SupportedService]string) (diff string) {
+func compareRenderedWithExpected(renderedServices *template.RenderedServices, testFiles map[service.SupportedService]string) (diff string) {
 	for serv, expected := range testFiles {
 		renderedService, ok := renderedServices.Services[serv]
 

@@ -36,14 +36,14 @@ func (r renderableServices) makeRootOutputPath() (absPath string, err error) {
 	return absPath, nil
 }
 
-func (r renderableServices) render(config *service.FullConfig) (RenderedServices, error) {
+func (r renderableServices) render(config *service.FullConfig) (*RenderedServices, error) {
 	var createdDirs []string
 
 	if !r.rootOutputPathExists() {
 		absPath, makeRootErr := r.makeRootOutputPath()
 
 		if makeRootErr != nil {
-			return RenderedServices{}, fmt.Errorf("make root output path: %s", makeRootErr)
+			return nil, fmt.Errorf("make root output path: %s", makeRootErr)
 		}
 
 		createdDirs = append(createdDirs, absPath)
@@ -52,7 +52,7 @@ func (r renderableServices) render(config *service.FullConfig) (RenderedServices
 	rendered, renderErr := r.renderServices(config)
 
 	if renderErr != nil {
-		return RenderedServices{}, fmt.Errorf("render services: %s", renderErr)
+		return nil, fmt.Errorf("render services: %s", renderErr)
 	}
 
 	rendered.CreatedDirs = append(rendered.CreatedDirs, createdDirs...)
@@ -60,7 +60,7 @@ func (r renderableServices) render(config *service.FullConfig) (RenderedServices
 	return rendered, nil
 }
 
-func (r renderableServices) renderServices(config *service.FullConfig) (RenderedServices, error) {
+func (r renderableServices) renderServices(config *service.FullConfig) (*RenderedServices, error) {
 	renderedServices := RenderedServices{
 		Services: map[service.SupportedService]*Rendered{},
 	}
@@ -73,13 +73,13 @@ func (r renderableServices) renderServices(config *service.FullConfig) (Rendered
 		rendered, err := renderable.render(config)
 
 		if err != nil {
-			return RenderedServices{}, fmt.Errorf("render %s service: %s", s, err)
+			return nil, fmt.Errorf("render %s service: %s", s, err)
 		}
 
 		renderedServices.Services[s] = rendered
 	}
 
-	return renderedServices, nil
+	return &renderedServices, nil
 }
 
 func (r renderableServices) outputPaths() outputPaths {
