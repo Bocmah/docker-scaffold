@@ -1,5 +1,4 @@
-{{- /*gotype: github.com/Bocmah/phpdocker-docker-scaffold/pkg/service.FullConfig*/ -}}
-FROM php:{{.Services.PHP.Version}}-fpm-alpine
+FROM php:7.4-fpm-alpine
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
@@ -24,11 +23,12 @@ RUN apt-get update && apt-get install -y \
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-# Install and enable extensions{{with .Services.PHP.Extensions}}
+# Install and enable extensions
 RUN docker-php-ext-install \
-    {{ range $index, $element := .}}{{if $index}} \
-    {{end}}{{$element}}{{end}}
-{{end}}
+    mbstring \
+    exif \
+    pdo_mysql
+
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -46,5 +46,5 @@ COPY --chown=www:www . /var/www
 USER www
 
 # Start php-fpm server
-EXPOSE {{.Services.Nginx.FastCGI.PassPort}}
+EXPOSE 9000
 CMD ["php-fpm"]
