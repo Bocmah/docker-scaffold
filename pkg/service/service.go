@@ -5,7 +5,7 @@ import "fmt"
 type SupportedService int
 
 func (s SupportedService) String() string {
-	if s < PHP || s > Database {
+	if s < PHP || s > NodeJS {
 		return "Unknown"
 	}
 
