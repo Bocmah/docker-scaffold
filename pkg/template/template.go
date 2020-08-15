@@ -14,7 +14,7 @@ func RenderTemplatesFromConfiguration(conf *service.FullConfig) (RenderedService
 	rendered, err := renderables.render(conf)
 
 	if err != nil {
-		return nil, fmt.Errorf("render renderable services: %s", err)
+		return RenderedServices{}, fmt.Errorf("render renderable services: %s", err)
 	}
 
 	return rendered, nil

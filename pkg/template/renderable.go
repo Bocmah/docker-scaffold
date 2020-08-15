@@ -15,14 +15,22 @@ type renderable struct {
 }
 
 func (r *renderable) render(conf *service.FullConfig) (*Rendered, error) {
+	rendered := &Rendered{}
+
 	tmpl, parseErr := template.ParseFiles(r.tmplPath)
 
 	if parseErr != nil {
 		return nil, fmt.Errorf("parse template: %s", parseErr)
 	}
 
-	if ensureDirErr := r.ensureOutputDir(); ensureDirErr != nil {
-		return nil, fmt.Errorf("ensure output dir: %s", ensureDirErr)
+	if !r.outputPathExists() {
+		absPath, makeErr := r.makeOutputPath()
+
+		if makeErr != nil {
+			return nil, fmt.Errorf("make root output path: %s", makeErr)
+		}
+
+		rendered.CreatedDirs = append(rendered.CreatedDirs, absPath)
 	}
 
 	file, createFileErr := os.Create(r.outputPath)
@@ -37,60 +45,31 @@ func (r *renderable) render(conf *service.FullConfig) (*Rendered, error) {
 		return nil, fmt.Errorf("execute template: %s", executeErr)
 	}
 
-	return &Rendered{Path: r.outputPath}, nil
+	rendered.Path = r.outputPath
+
+	return rendered, nil
 }
 
-func (r *renderable) ensureOutputDir() error {
-	return os.MkdirAll(filepath.Dir(r.outputPath), 0755)
-}
-
-type renderableServices map[service.SupportedService]*renderable
-
-func (r renderableServices) render(config *service.FullConfig) (RenderedServices, error) {
-	renderedServ := RenderedServices{}
-
-	for s, renderable := range r {
-		if !config.Services.IsPresent(s) {
-			continue
-		}
-
-		rendered, err := renderable.render(config)
-
-		if err != nil {
-			return nil, fmt.Errorf("render %s service: %s", s, err)
-		}
-
-		renderedServ[s] = rendered
+func (r *renderable) outputPathExists() bool {
+	if _, statErr := os.Stat(filepath.Dir(r.outputPath)); os.IsNotExist(statErr) {
+		return false
 	}
 
-	return renderedServ, nil
+	return true
 }
 
-func (r renderableServices) outputPaths() outputPaths {
-	outputPaths := outputPaths{}
+func (r *renderable) makeOutputPath() (absPath string, err error) {
+	outputDir := filepath.Dir(r.outputPath)
 
-	for s, renderable := range r {
-		outputPaths[s] = renderable.outputPath
+	if mkdirErr := os.MkdirAll(outputDir, 0755); mkdirErr != nil {
+		return "", fmt.Errorf("MkdirAll: %s", mkdirErr)
 	}
 
-	return outputPaths
-}
+	absPath, absErr := filepath.Abs(outputDir)
 
-func newRenderableServices(rootTmplPath, rootOutputPath string) renderableServices {
-	return renderableServices{
-		service.PHP: {
-			tmplPath:   fullPath(rootTmplPath, "php/php.dockerfile.gotmpl"),
-			outputPath: fullPath(rootOutputPath, "php/Dockerfile"),
-		},
-		service.Nginx: {
-			tmplPath:   fullPath(rootTmplPath, "nginx/conf.gotmpl"),
-			outputPath: fullPath(rootOutputPath, "nginx/conf.d/app.conf"),
-		},
-		service.NodeJS: {
-			tmplPath:   fullPath(rootTmplPath, "nodejs/nodejs.dockerfile.gotmpl"),
-			outputPath: fullPath(rootOutputPath, "nodejs/Dockerfile"),
-		},
+	if absErr != nil {
+		return "", fmt.Errorf("absolute path: %s", absErr)
 	}
-}
 
-type outputPaths map[service.SupportedService]string
+	return absPath, nil
+}

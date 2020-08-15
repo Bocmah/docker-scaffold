@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -65,16 +66,28 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		t.Fatalf("Output path %v still doesn't exist after calling rendering function", outputPath)
 	}
 
+	absPath, absErr := filepath.Abs(outputPath + string(os.PathSeparator))
+
+	if absErr != nil {
+		t.Fatal(absErr)
+	}
+
 	wantRendered := template.RenderedServices{
-		service.PHP: &template.Rendered{
-			Path: outputPath + string(os.PathSeparator) + "php/Dockerfile",
+		Services: map[service.SupportedService]*template.Rendered{
+			service.PHP: {
+				Path:        outputPath + string(os.PathSeparator) + "php/Dockerfile",
+				CreatedDirs: []string{absPath + string(os.PathSeparator) + "php"},
+			},
+			service.Nginx: {
+				Path:        outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
+				CreatedDirs: []string{absPath + string(os.PathSeparator) + "nginx/conf.d"},
+			},
+			service.NodeJS: {
+				Path:        outputPath + string(os.PathSeparator) + "nodejs/Dockerfile",
+				CreatedDirs: []string{absPath + string(os.PathSeparator) + "nodejs"},
+			},
 		},
-		service.Nginx: &template.Rendered{
-			Path: outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
-		},
-		service.NodeJS: &template.Rendered{
-			Path: outputPath + string(os.PathSeparator) + "nodejs/Dockerfile",
-		},
+		CreatedDirs: []string{absPath},
 	}
 
 	if diff := cmp.Diff(wantRendered, rendered); diff != "" {
@@ -95,7 +108,7 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 
 func compareRenderedWithExpected(renderedServices template.RenderedServices, testFiles map[service.SupportedService]string) (diff string) {
 	for serv, expected := range testFiles {
-		renderedService, ok := renderedServices[serv]
+		renderedService, ok := renderedServices.Services[serv]
 
 		if !ok {
 			return fmt.Sprintf("Service %s was not rendered", serv)
