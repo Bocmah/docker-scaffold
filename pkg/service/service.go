@@ -102,6 +102,18 @@ func (s *ServicesConfig) PresentServicesCount() int {
 	return count
 }
 
+func (s *ServicesConfig) presentServices() []SupportedService {
+	var services []SupportedService
+
+	for _, sup := range SupportedServices() {
+		if s.IsPresent(sup) {
+			services = append(services, sup)
+		}
+	}
+
+	return services
+}
+
 func (s *ServicesConfig) String() string {
 	return fmt.Sprintf(
 		"ServicesConfig{PHPConfig: %v, NodeJSConfig: %v, NginxConfig: %v, DatabaseConfig: %v}",

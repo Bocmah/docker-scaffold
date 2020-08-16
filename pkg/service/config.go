@@ -51,6 +51,25 @@ func (c *FullConfig) Validate() error {
 	return errors
 }
 
+func (c *FullConfig) GetServiceFiles() map[SupportedService][]*File {
+	outputPath := c.getOutputPath()
+	files := map[SupportedService][]*File{}
+
+	for _, service := range c.Services.presentServices() {
+		files[service] = getFilesForService(service, outputPath)
+	}
+
+	return files
+}
+
+func (c *FullConfig) getOutputPath() string {
+	if c.OutputPath != "" {
+		return c.OutputPath
+	}
+
+	return c.ProjectRoot
+}
+
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
