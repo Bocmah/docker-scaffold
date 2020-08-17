@@ -1,6 +1,8 @@
 package service
 
-import "os"
+import (
+	"os"
+)
 
 type FileType int
 
@@ -24,6 +26,10 @@ func (f *File) GetOutputPath() string {
 	return f.PathOnHost
 }
 
+func (f *File) IsMountable() bool {
+	return f.PathOnHost != "" && f.PathInContainer != ""
+}
+
 func getFilesForService(service SupportedService, outputPath string) []*File {
 	switch service {
 	case PHP:
@@ -37,9 +43,10 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 	case Nginx:
 		return []*File{
 			{
-				Type:         ConfigFile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
-				TemplatePath: "../../tmpl" + string(os.PathSeparator) + "nginx/conf.gotmpl",
+				Type:            ConfigFile,
+				PathOnHost:      outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
+				PathInContainer: "/etc/nginx/conf.d/app.conf",
+				TemplatePath:    "../../tmpl" + string(os.PathSeparator) + "nginx/conf.gotmpl",
 			},
 		}
 	case NodeJS:
@@ -54,3 +61,5 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 		return nil
 	}
 }
+
+type Files map[SupportedService][]*File

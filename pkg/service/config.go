@@ -51,7 +51,7 @@ func (c *FullConfig) Validate() error {
 	return errors
 }
 
-func (c *FullConfig) GetServiceFiles() map[SupportedService][]*File {
+func (c *FullConfig) GetServiceFiles() Files {
 	outputPath := c.getOutputPath()
 	files := map[SupportedService][]*File{}
 
@@ -60,6 +60,16 @@ func (c *FullConfig) GetServiceFiles() map[SupportedService][]*File {
 	}
 
 	return files
+}
+
+func (c *FullConfig) GetEnvironment() Environment {
+	if !c.Services.IsPresent(Database) {
+		return nil
+	}
+
+	return Environment{
+		Database: c.Services.Database.Environment(),
+	}
 }
 
 func (c *FullConfig) getOutputPath() string {
