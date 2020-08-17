@@ -6,12 +6,12 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
-func Render(servicesWithFiles map[service.SupportedService][]RenderableFile, conf *service.FullConfig) (*RenderedServices, error) {
+func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
 	renderedServices := RenderedServices{
 		Services: map[service.SupportedService][]*Rendered{},
 	}
 
-	for serv, renderableFiles := range servicesWithFiles {
+	for serv, renderableFiles := range conf.GetServiceFiles() {
 		for _, file := range renderableFiles {
 			rendered, renderErr := render(file, conf)
 

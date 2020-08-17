@@ -66,33 +66,7 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		},
 	}
 
-	tmplPath := "../../tmpl"
-
-	serviceWithFiles := map[service.SupportedService][]render.RenderableFile{
-		service.PHP: {
-			&service.File{
-				Type:         service.Dockerfile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "php/Dockerfile",
-				TemplatePath: tmplPath + string(os.PathSeparator) + "php/php.dockerfile.gotmpl",
-			},
-		},
-		service.Nginx: {
-			&service.File{
-				Type:         service.ConfigFile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
-				TemplatePath: tmplPath + string(os.PathSeparator) + "nginx/conf.gotmpl",
-			},
-		},
-		service.NodeJS: {
-			&service.File{
-				Type:         service.Dockerfile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "nodejs/Dockerfile",
-				TemplatePath: tmplPath + string(os.PathSeparator) + "nodejs/nodejs.dockerfile.gotmpl",
-			},
-		},
-	}
-
-	rendered, renderErr := render.Render(serviceWithFiles, conf)
+	rendered, renderErr := render.RenderServices(conf)
 
 	if renderErr != nil {
 		t.Fatalf("Encountered non-nil error in correct test case: %v", renderErr)
