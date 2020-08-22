@@ -17,15 +17,21 @@ type Option interface {
 }
 
 type optionsAssembler struct {
-	compose      *dockercompose.Config
-	serviceFiles map[service.SupportedService]ServiceFiles
+	databaseSystemInUse service.SupportedSystem
+	compose             *dockercompose.Config
+	serviceFiles        service.Files
+	serviceEnv          service.Environment
 }
 
 func (o *optionsAssembler) assembleForService(serv service.SupportedService) []Option {
 	var opts []Option
 
 	if len(o.compose.Volumes) != 0 && serv == service.Database {
-		opts = append(opts, WithVolumes(o.compose.Volumes.ToServiceVolumes()))
+		databaseVols := o.getVolumesForDatabase()
+
+		if len(databaseVols) != 0 {
+			opts = append(opts, WithVolumes(databaseVols))
+		}
 	}
 
 	if len(o.compose.Networks) != 0 {
@@ -33,32 +39,56 @@ func (o *optionsAssembler) assembleForService(serv service.SupportedService) []O
 	}
 
 	opts = append(opts, o.serviceFileOpts(serv)...)
+	opts = append(opts, o.serviceEnvOpts(serv)...)
 
 	return opts
 }
 
-func (o *optionsAssembler) serviceFileOpts(service service.SupportedService) []Option {
-	files, ok := o.serviceFiles[service]
+func (o *optionsAssembler) getVolumesForDatabase() dockercompose.ServiceVolumes {
+	vols := dockercompose.ServiceVolumes{}
+
+	for _, vol := range o.compose.Volumes {
+		vols = append(vols, &dockercompose.ServiceVolume{Source: vol.Name, Target: o.databaseSystemInUse.DataPath()})
+	}
+
+	return vols
+}
+
+func (o *optionsAssembler) serviceFileOpts(serv service.SupportedService) []Option {
+	files, ok := o.serviceFiles[serv]
 
 	if !ok {
 		return nil
 	}
 
 	var opts []Option
+	var volumes dockercompose.ServiceVolumes
 
-	if files.DockerfilePath != "" {
-		opts = append(opts, WithDockerfilePath(files.DockerfilePath))
+	for _, file := range files {
+		if file.Type == service.Dockerfile {
+			opts = append(opts, WithDockerfilePath(file.PathOnHost))
+		}
+
+		if file.IsMountable() {
+			volumes = append(volumes, &dockercompose.ServiceVolume{Source: file.PathOnHost, Target: file.PathInContainer})
+		}
 	}
 
-	if len(files.Mounts) > 0 {
-		opts = append(opts, WithVolumes(files.Mounts))
-	}
-
-	if len(files.Environment) > 0 {
-		opts = append(opts, WithEnvironment(files.Environment))
+	if len(volumes) != 0 {
+		opts = append(opts, WithVolumes(volumes))
 	}
 
 	return opts
+}
+
+func (o *optionsAssembler) serviceEnvOpts(serv service.SupportedService) []Option {
+	env, ok := o.serviceEnv[serv]
+
+	if !ok {
+		return nil
+	}
+
+	return []Option{WithEnvironment(env)}
 }
 
 type dockerfilePathOption string

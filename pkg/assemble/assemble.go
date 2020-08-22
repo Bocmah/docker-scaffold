@@ -8,13 +8,7 @@ import (
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
 
-type ServiceFiles struct {
-	DockerfilePath string
-	Mounts         []*dockercompose.ServiceVolume
-	Environment    dockercompose.Environment
-}
-
-func DockerCompose(conf *service.FullConfig, serviceFiles map[service.SupportedService]ServiceFiles) *dockercompose.Config {
+func DockerCompose(conf *service.FullConfig) *dockercompose.Config {
 	compose := &dockercompose.Config{
 		Version: "3.8",
 	}
@@ -31,7 +25,12 @@ func DockerCompose(conf *service.FullConfig, serviceFiles map[service.SupportedS
 
 	optsAssembler := &optionsAssembler{
 		compose:      compose,
-		serviceFiles: serviceFiles,
+		serviceFiles: conf.GetServiceFiles(),
+		serviceEnv:   conf.GetEnvironment(),
+	}
+
+	if conf.Services.IsPresent(service.Database) {
+		optsAssembler.databaseSystemInUse = conf.Services.Database.System
 	}
 
 	for _, s := range service.SupportedServices() {

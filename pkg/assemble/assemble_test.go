@@ -3,8 +3,6 @@ package assemble_test
 import (
 	"testing"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
-
 	"github.com/Bocmah/phpdocker-scaffold/pkg/assemble"
 	"github.com/google/go-cmp/cmp"
 
@@ -42,7 +40,7 @@ func TestDockerCompose(t *testing.T) {
 				Networks: dockercompose.ServiceNetworks{network},
 				Volumes: dockercompose.ServiceVolumes{
 					{Source: "/home/test/app", Target: "/var/www"},
-					{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"},
+					{Source: "/home/test/app/.docker/nginx/conf.d/app.conf", Target: "/etc/nginx/conf.d/app.conf"},
 				},
 			},
 			{
@@ -83,32 +81,7 @@ func TestDockerCompose(t *testing.T) {
 		},
 	}
 
-	files := map[service.SupportedService]assemble.ServiceFiles{
-		service.PHP: {
-			DockerfilePath: "/home/test/app/.docker/php/Dockerfile",
-		},
-		service.Nginx: {
-			Mounts: []*dockercompose.ServiceVolume{
-				{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"},
-			},
-		},
-		service.Database: {
-			Environment: map[string]string{
-				"MYSQL_DATABASE":      "test-db",
-				"MYSQL_ROOT_PASSWORD": "secret-root",
-				"MYSQL_USER":          "test-user",
-				"MYSQL_PASSWORD":      "secret-password",
-			},
-			Mounts: []*dockercompose.ServiceVolume{
-				{Source: "test-app-data", Target: "/var/lib/mysql"},
-			},
-		},
-		service.NodeJS: {
-			DockerfilePath: "/home/test/app/.docker/nodejs/Dockerfile",
-		},
-	}
-
-	got := assemble.DockerCompose(conf, files)
+	got := assemble.DockerCompose(conf)
 
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Fatalf("DockerCompose mismatch (-want +got):\n%s", diff)
