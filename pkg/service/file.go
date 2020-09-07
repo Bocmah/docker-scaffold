@@ -1,7 +1,7 @@
 package service
 
 import (
-	"os"
+	"path/filepath"
 )
 
 type FileType int
@@ -36,25 +36,25 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 		return []*File{
 			{
 				Type:         Dockerfile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "php/Dockerfile",
-				TemplatePath: "../../tmpl" + string(os.PathSeparator) + "php/php.dockerfile.gotmpl",
+				PathOnHost:   filepath.Join(outputPath, "php/Dockerfile"),
+				TemplatePath: filepath.Join("../../tmpl", "php/php.dockerfile.gotmpl"),
 			},
 		}
 	case Nginx:
 		return []*File{
 			{
 				Type:            ConfigFile,
-				PathOnHost:      outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
+				PathOnHost:      filepath.Join(outputPath, "nginx/conf.d/app.conf"),
 				PathInContainer: "/etc/nginx/conf.d/app.conf",
-				TemplatePath:    "../../tmpl" + string(os.PathSeparator) + "nginx/conf.gotmpl",
+				TemplatePath:    filepath.Join("../../tmpl", "nginx/conf.gotmpl"),
 			},
 		}
 	case NodeJS:
 		return []*File{
 			{
 				Type:         Dockerfile,
-				PathOnHost:   outputPath + string(os.PathSeparator) + "nodejs/Dockerfile",
-				TemplatePath: "../../tmpl" + string(os.PathSeparator) + "nodejs/nodejs.dockerfile.gotmpl",
+				PathOnHost:   filepath.Join(outputPath, "nodejs/Dockerfile"),
+				TemplatePath: filepath.Join("../../tmpl", "nodejs/nodejs.dockerfile.gotmpl"),
 			},
 		}
 	default:

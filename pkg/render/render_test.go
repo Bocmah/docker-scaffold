@@ -90,20 +90,20 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		Services: map[service.SupportedService][]*render.Rendered{
 			service.PHP: {
 				{
-					Path:        outputPath + string(os.PathSeparator) + "php/Dockerfile",
-					CreatedDirs: []string{absPath + string(os.PathSeparator) + "php"},
+					Path:        filepath.Join(outputPath, "php/Dockerfile"),
+					CreatedDirs: []string{filepath.Join(absPath, "php")},
 				},
 			},
 			service.Nginx: {
 				{
-					Path:        outputPath + string(os.PathSeparator) + "nginx/conf.d/app.conf",
-					CreatedDirs: []string{absPath + string(os.PathSeparator) + "nginx/conf.d"},
+					Path:        filepath.Join(outputPath, "nginx/conf.d/app.conf"),
+					CreatedDirs: []string{filepath.Join(absPath, "nginx/conf.d")},
 				},
 			},
 			service.NodeJS: {
 				{
-					Path:        outputPath + string(os.PathSeparator) + "nodejs/Dockerfile",
-					CreatedDirs: []string{absPath + string(os.PathSeparator) + "nodejs"},
+					Path:        filepath.Join(outputPath, "nodejs/Dockerfile"),
+					CreatedDirs: []string{filepath.Join(absPath, "nodejs")},
 				},
 			},
 		},
@@ -115,9 +115,9 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 
 	testFilesRoot := "testdata/template_render/.docker"
 	testFiles := map[service.SupportedService][]string{
-		service.PHP:    {testFilesRoot + string(os.PathSeparator) + "php/Dockerfile"},
-		service.Nginx:  {testFilesRoot + string(os.PathSeparator) + "nginx/conf.d/app.conf"},
-		service.NodeJS: {testFilesRoot + string(os.PathSeparator) + "nodejs/Dockerfile"},
+		service.PHP:    {filepath.Join(testFilesRoot, "php/Dockerfile")},
+		service.Nginx:  {filepath.Join(testFilesRoot, "nginx/conf.d/app.conf")},
+		service.NodeJS: {filepath.Join(testFilesRoot, "nodejs/Dockerfile")},
 	}
 
 	if diff := compareRenderedWithExpected(rendered, testFiles); diff != "" {
