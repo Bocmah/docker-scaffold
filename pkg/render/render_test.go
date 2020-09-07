@@ -7,6 +7,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"gopkg.in/yaml.v2"
+
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Bocmah/phpdocker-scaffold/pkg/render"
@@ -118,6 +122,201 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 
 	if diff := compareRenderedWithExpected(rendered, testFiles); diff != "" {
 		t.Fatalf(diff)
+	}
+}
+
+func TestRenderDockerCompose(t *testing.T) {
+	absPathToOutput, absErr := filepath.Abs("testdata")
+
+	if absErr != nil {
+		t.Fatalf("failed to find absolute path to testdata dir: %s", absErr)
+	}
+
+	dir, tempDirErr := ioutil.TempDir(absPathToOutput, "output")
+
+	if tempDirErr != nil {
+		t.Fatalf("failed to create temp dir: %s", tempDirErr)
+	}
+
+	defer os.RemoveAll(dir)
+
+	network := &dockercompose.Network{Name: "awesome-app-network", Driver: dockercompose.NetworkDriverBridge}
+	namedVolume := &dockercompose.NamedVolume{Name: "awesome-app-data", Driver: dockercompose.VolumeDriverLocal}
+	projectRoot := "/home/test/app"
+	workDir := "/var/www"
+
+	conf := &dockercompose.Config{
+		Version:  "3.8",
+		Networks: dockercompose.Networks{network},
+		Volumes:  dockercompose.NamedVolumes{namedVolume},
+		Services: []*dockercompose.Service{
+			{
+				Name:          "php",
+				ContainerName: "php",
+				Build: &dockercompose.Build{
+					Context:    projectRoot,
+					Dockerfile: filepath.Join(projectRoot, ".docker/php/Dockerfile"),
+				},
+				Image: &dockercompose.Image{
+					Name: "awesome-app",
+				},
+				WorkingDir: workDir,
+				Restart:    dockercompose.RestartPolicyUnlessStopped,
+				Networks:   dockercompose.ServiceNetworks{network},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: projectRoot, Target: workDir},
+				},
+			},
+			{
+				Name:          "webserver",
+				ContainerName: "webserver",
+				Image:         &dockercompose.Image{Name: "nginx", Tag: "alpine"},
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 80, Container: 80},
+					&dockercompose.PortsMapping{Host: 443, Container: 443},
+				},
+				Networks: dockercompose.ServiceNetworks{network},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: projectRoot, Target: workDir},
+					&dockercompose.ServiceVolume{Source: "./nginx/conf.d/", Target: "/etc/nginx/conf.d/"},
+				},
+			},
+			{
+				Name:          "db",
+				ContainerName: "db",
+				Image:         &dockercompose.Image{Name: "mysql", Tag: "8.0"},
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 3306, Container: 3306},
+				},
+				Environment: dockercompose.Environment{
+					"MYSQL_DATABASE":      "test-db",
+					"MYSQL_ROOT_PASSWORD": "secret-root",
+					"MYSQL_USER":          "test-user",
+					"MYSQL_PASSWORD":      "secret-password",
+				},
+				Networks: dockercompose.ServiceNetworks{network},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: namedVolume.Name, Target: "/var/lib/mysql"},
+				},
+			},
+			{
+				Name:          "nodejs",
+				ContainerName: "nodejs",
+				Build: &dockercompose.Build{
+					Context:    projectRoot,
+					Dockerfile: filepath.Join(projectRoot, ".docker/nodejs/Dockerfile"),
+				},
+				WorkingDir: "/opt",
+				Networks:   dockercompose.ServiceNetworks{network},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: projectRoot, Target: "/opt"},
+				},
+			},
+		},
+	}
+
+	outputPath := filepath.Join(dir, "docker-compose.yml")
+
+	renderErr := render.RenderDockerCompose(conf, outputPath)
+
+	if renderErr != nil {
+		t.Fatalf("encountered non nil err with correct configuration: %s", renderErr)
+	}
+
+	data, readErr := ioutil.ReadFile(outputPath)
+
+	if readErr != nil {
+		t.Fatalf("failed to read resulting docker-compose.yml: %s", readErr)
+	}
+
+	want := map[string]interface{}{
+		"version": "3.8",
+		"services": map[interface{}]interface{}{
+			"php": map[interface{}]interface{}{
+				"container_name": "php",
+				"working_dir":    workDir,
+				"build": map[interface{}]interface{}{
+					"context":    projectRoot,
+					"dockerfile": filepath.Join(projectRoot, ".docker/php/Dockerfile"),
+				},
+				"image":   "awesome-app",
+				"restart": string(dockercompose.RestartPolicyUnlessStopped),
+				"networks": []interface{}{
+					network.Name,
+				},
+				"volumes": []interface{}{
+					projectRoot + ":" + workDir,
+				},
+			},
+			"webserver": map[interface{}]interface{}{
+				"container_name": "webserver",
+				"image":          "nginx:alpine",
+				"ports": []interface{}{
+					"80:80",
+					"443:443",
+				},
+				"networks": []interface{}{
+					network.Name,
+				},
+				"volumes": []interface{}{
+					projectRoot + ":" + workDir,
+					"./nginx/conf.d/:/etc/nginx/conf.d/",
+				},
+			},
+			"db": map[interface{}]interface{}{
+				"container_name": "db",
+				"image":          "mysql:8.0",
+				"restart":        string(dockercompose.RestartPolicyUnlessStopped),
+				"ports": []interface{}{
+					"3306:3306",
+				},
+				"environment": map[interface{}]interface{}{
+					"MYSQL_DATABASE":      "test-db",
+					"MYSQL_ROOT_PASSWORD": "secret-root",
+					"MYSQL_USER":          "test-user",
+					"MYSQL_PASSWORD":      "secret-password",
+				},
+				"networks": []interface{}{
+					network.Name,
+				},
+				"volumes": []interface{}{
+					namedVolume.Name + ":" + "/var/lib/mysql",
+				},
+			},
+			"nodejs": map[interface{}]interface{}{
+				"container_name": "nodejs",
+				"working_dir":    "/opt",
+				"build": map[interface{}]interface{}{
+					"context":    projectRoot,
+					"dockerfile": filepath.Join(projectRoot, ".docker/nodejs/Dockerfile"),
+				},
+				"networks": []interface{}{
+					network.Name,
+				},
+				"volumes": []interface{}{
+					projectRoot + ":" + "/opt",
+				},
+			},
+		},
+		"networks": map[interface{}]interface{}{
+			network.Name: map[interface{}]interface{}{
+				"driver": string(network.Driver),
+			},
+		},
+		"volumes": map[interface{}]interface{}{
+			namedVolume.Name: nil,
+		},
+	}
+
+	got := map[string]interface{}{}
+
+	if unmarshallErr := yaml.Unmarshal(data, got); unmarshallErr != nil {
+		t.Fatalf("failed to unmarshall docker-compose.yml: %s", unmarshallErr)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Fatalf("Expected and rendered dockercompose mismatch (-want +got):\n%s", diff)
 	}
 }
 

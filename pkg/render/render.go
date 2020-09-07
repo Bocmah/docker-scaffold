@@ -2,6 +2,9 @@ package render
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
 
 	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
 )
@@ -24,4 +27,22 @@ func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
 	}
 
 	return &renderedServices, nil
+}
+
+func RenderDockerCompose(conf *dockercompose.Config, outputPath string) error {
+	file, createErr := os.Create(outputPath)
+
+	if createErr != nil {
+		return fmt.Errorf("create output file: %s", createErr)
+	}
+
+	defer file.Close()
+
+	_, writeErr := file.WriteString(conf.Render())
+
+	if writeErr != nil {
+		return fmt.Errorf("write to output file: %s", writeErr)
+	}
+
+	return nil
 }
