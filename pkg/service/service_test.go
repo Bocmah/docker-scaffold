@@ -14,7 +14,7 @@ func dummyConfigWithAllServices() *service.ServicesConfig {
 		},
 		Nginx: &service.NginxConfig{
 			HTTPPort:   80,
-			ServerName: "docker-scaffold",
+			ServerName: "phpdocker-gen",
 			FastCGI: &service.FastCGI{
 				PassPort:           9000,
 				ReadTimeoutSeconds: 60,
@@ -26,7 +26,7 @@ func dummyConfigWithAllServices() *service.ServicesConfig {
 		Database: &service.DatabaseConfig{
 			System:  service.MySQL,
 			Version: "5.7",
-			Name:    "docker-scaffold",
+			Name:    "phpdocker-gen",
 			Port:    3306,
 			Credentials: service.Credentials{
 				Username:     "bocmah",

@@ -1,4 +1,4 @@
-appName: docker-scaffold
+appName: phpdocker-gen
 projectRoot: /home/user/projects/test
 outputPath: /home/user/output
 services:

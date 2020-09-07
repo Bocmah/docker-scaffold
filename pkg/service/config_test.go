@@ -16,7 +16,7 @@ func TestLoadConfigFromFile(t *testing.T) {
 	}
 
 	want := &service.FullConfig{
-		AppName:     "docker-scaffold",
+		AppName:     "phpdocker-gen",
 		ProjectRoot: "/home/user/projects/test",
 		OutputPath:  "/home/user/output",
 		Services: &service.ServicesConfig{
