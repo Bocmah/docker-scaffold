@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -52,7 +53,7 @@ func (c *FullConfig) Validate() error {
 }
 
 func (c *FullConfig) GetServiceFiles() Files {
-	outputPath := c.getOutputPath()
+	outputPath := c.GetOutputPath()
 	files := map[SupportedService][]*File{}
 
 	for _, service := range c.Services.presentServices() {
@@ -72,12 +73,12 @@ func (c *FullConfig) GetEnvironment() Environment {
 	}
 }
 
-func (c *FullConfig) getOutputPath() string {
+func (c *FullConfig) GetOutputPath() string {
 	if c.OutputPath != "" {
 		return c.OutputPath
 	}
 
-	return c.ProjectRoot
+	return filepath.Join(c.ProjectRoot, ".docker")
 }
 
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
