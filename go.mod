@@ -1,4 +1,4 @@
-module github.com/Bocmah/phpdocker-scaffold
+module github.com/Bocmah/phpdocker-gen
 
 go 1.15
 
