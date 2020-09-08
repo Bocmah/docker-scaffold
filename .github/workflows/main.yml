@@ -18,6 +18,6 @@ jobs:
       - name: Check out source code
         uses: actions/checkout@v2
       - name: Build
-        run: go build
+        run: go build ./cmd/phpdocker-gen
       - name: Test
         run: go test -v .
