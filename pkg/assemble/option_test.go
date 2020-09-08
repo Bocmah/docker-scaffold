@@ -5,9 +5,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 )
 
 func newTestDockerComposeConfig() *dockercompose.Config {

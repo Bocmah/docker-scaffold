@@ -3,7 +3,7 @@ package dockercompose_test
 import (
 	"testing"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 )
 
 func TestRestartPolicy_Render(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 func DockerCompose(conf *service.FullConfig) *dockercompose.Config {

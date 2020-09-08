@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/assemble"
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/assemble"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 func dummyConf() *service.FullConfig {

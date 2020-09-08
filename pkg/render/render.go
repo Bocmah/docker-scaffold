@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {

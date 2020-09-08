@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/assemble"
-	"github.com/Bocmah/phpdocker-scaffold/pkg/render"
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/assemble"
+	"github.com/Bocmah/phpdocker-gen/pkg/render"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 func main() {

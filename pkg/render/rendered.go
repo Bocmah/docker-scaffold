@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 type Rendered struct {

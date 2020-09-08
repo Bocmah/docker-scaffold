@@ -3,8 +3,8 @@ package assemble
 import (
 	"fmt"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 type ServiceAssembler func(conf *service.FullConfig, opts ...Option) *dockercompose.Service

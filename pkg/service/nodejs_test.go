@@ -3,7 +3,7 @@ package service_test
 import (
 	"testing"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 func TestNodeJS_FillDefaultsIfNotSet(t *testing.T) {

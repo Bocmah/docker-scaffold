@@ -3,10 +3,10 @@ package assemble_test
 import (
 	"testing"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/assemble"
+	"github.com/Bocmah/phpdocker-gen/pkg/assemble"
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/Bocmah/phpdocker-scaffold/internal/dockercompose"
+	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 )
 
 func TestDockerCompose(t *testing.T) {

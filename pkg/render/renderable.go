@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/Bocmah/phpdocker-scaffold/pkg/service"
+	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
 type RenderableFile interface {
