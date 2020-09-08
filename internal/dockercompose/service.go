@@ -9,6 +9,7 @@ type renderableItem interface {
 	Render() string
 }
 
+// Service represents a single service inside docker-compose services directive
 type Service struct {
 	Name          string
 	Build         *Build
@@ -22,6 +23,7 @@ type Service struct {
 	Volumes       ServiceVolumes
 }
 
+// Render formats Service as YAML string
 func (s *Service) Render() string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("%s:", s.Name))

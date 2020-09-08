@@ -6,8 +6,10 @@ import (
 	"strings"
 )
 
+// Ports represents 'ports' directive in docker-compose file
 type Ports []*PortsMapping
 
+// Render formats Ports as YAML string
 func (p Ports) Render() string {
 	length := len(p)
 
@@ -29,11 +31,13 @@ func (p Ports) Render() string {
 	return sb.String()
 }
 
+// PortsMapping represents a single mapping of host port to container port
 type PortsMapping struct {
 	Host      int
 	Container int
 }
 
+// Render formats PortsMapping as YAML string
 func (m *PortsMapping) Render() string {
 	if m.Container == 0 {
 		return ""

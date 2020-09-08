@@ -2,6 +2,7 @@ package dockercompose
 
 import "fmt"
 
+// RestartPolicy is one of the restart policies supported by docker
 type RestartPolicy string
 
 const (
@@ -11,6 +12,7 @@ const (
 	RestartPolicyUnlessStopped RestartPolicy = "unless-stopped"
 )
 
+// Render formats RestartPolicy as YAML string
 func (r RestartPolicy) Render() string {
 	if r == "" {
 		return ""

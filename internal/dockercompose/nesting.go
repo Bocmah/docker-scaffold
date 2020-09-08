@@ -5,8 +5,10 @@ import (
 	"strings"
 )
 
+// NestingLevel represents how deep string to which it is applied should be nested
 type NestingLevel int
 
+// ApplyTo adds spaces (based on the NestingLevel) to the left of the string
 func (n NestingLevel) ApplyTo(str string) string {
 	if n <= 0 {
 		return str

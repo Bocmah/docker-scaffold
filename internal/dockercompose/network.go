@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// NetworkDriver is one of the network drivers supported by docker
 type NetworkDriver string
 
 const (
@@ -15,11 +16,13 @@ const (
 	NetworkDriverNone    NetworkDriver = "none"
 )
 
+// Network is a top-level network in docker-compose file
 type Network struct {
 	Name   string
 	Driver NetworkDriver
 }
 
+// Render formats Network as YAML string
 func (n *Network) Render() string {
 	if n.Name == "" || n.Driver == "" {
 		return ""
@@ -28,8 +31,10 @@ func (n *Network) Render() string {
 	return fmt.Sprintf("%s:\n  driver: %s", n.Name, n.Driver)
 }
 
+// ServiceNetworks is service-level networks
 type ServiceNetworks []*Network
 
+// Render formats ServiceNetworks as YAML string
 func (n ServiceNetworks) Render() string {
 	length := len(n)
 
@@ -51,8 +56,10 @@ func (n ServiceNetworks) Render() string {
 	return sb.String()
 }
 
+// Networks is a top-level networks directive
 type Networks []*Network
 
+// Render formats Networks as YAML string
 func (n Networks) Render() string {
 	var sb strings.Builder
 
@@ -65,10 +72,12 @@ func (n Networks) Render() string {
 	return sb.String()
 }
 
+// IsEmpty checks if Networks has zero networks
 func (n Networks) IsEmpty() bool {
 	return len(n) == 0
 }
 
+// ToServiceNetworks transforms top-level Networks to service-level ServiceNetworks
 func (n Networks) ToServiceNetworks() ServiceNetworks {
 	return ServiceNetworks(n)
 }

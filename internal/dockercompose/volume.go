@@ -5,17 +5,20 @@ import (
 	"strings"
 )
 
+// VolumeDriver is one of the volume drivers supported by docker
 type VolumeDriver string
 
 const (
 	VolumeDriverLocal VolumeDriver = "local"
 )
 
+// ServiceVolume represents service-level volume mapping in docker-compose file
 type ServiceVolume struct {
 	Source string
 	Target string
 }
 
+// String formats ServiceVolume as a mapping
 func (v *ServiceVolume) String() string {
 	if v.Target == "" {
 		return ""
@@ -24,8 +27,10 @@ func (v *ServiceVolume) String() string {
 	return Mapping(v.Source, v.Target)
 }
 
+// ServiceVolumes represents service-level volumes directive
 type ServiceVolumes []*ServiceVolume
 
+// Render formats ServiceVolumes as YAML string
 func (v ServiceVolumes) Render() string {
 	length := len(v)
 
@@ -47,11 +52,13 @@ func (v ServiceVolumes) Render() string {
 	return sb.String()
 }
 
+// NamedVolume represents top-level volume in docker-compose file
 type NamedVolume struct {
 	Name   string
 	Driver VolumeDriver
 }
 
+// Render formats NamedVolume as YAML string
 func (v *NamedVolume) Render() string {
 	if v.Name == "" || v.Driver == "" {
 		return ""
@@ -70,6 +77,7 @@ func (v *NamedVolume) Render() string {
 	return sb.String()
 }
 
+// ToServiceVolume transforms NamedVolume to ServiceVolume
 func (v *NamedVolume) ToServiceVolume() *ServiceVolume {
 	if v.Name == "" {
 		return nil
@@ -78,6 +86,7 @@ func (v *NamedVolume) ToServiceVolume() *ServiceVolume {
 	return &ServiceVolume{Target: v.Name}
 }
 
+// NamedVolumes represents top-level 'volumes' directive in docker-compose file
 type NamedVolumes []*NamedVolume
 
 func (v NamedVolumes) Render() string {
@@ -92,10 +101,12 @@ func (v NamedVolumes) Render() string {
 	return sb.String()
 }
 
+// IsEmpty checks if NamedVolumes has zero volumes
 func (v NamedVolumes) IsEmpty() bool {
 	return len(v) == 0
 }
 
+// ToServiceVolumes transforms NamedVolumes to ServiceVolumes
 func (v NamedVolumes) ToServiceVolumes() ServiceVolumes {
 	vols := ServiceVolumes{}
 

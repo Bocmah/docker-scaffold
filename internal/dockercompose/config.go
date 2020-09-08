@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Config represents docker-compose file as a struct
 type Config struct {
 	Version  string
 	Services []*Service
@@ -12,6 +13,7 @@ type Config struct {
 	Volumes  NamedVolumes
 }
 
+// Render formats Config as YAML string
 func (c *Config) Render() string {
 	if c.Version == "" || len(c.Services) == 0 {
 		return ""

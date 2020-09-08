@@ -5,11 +5,13 @@ import (
 	"strings"
 )
 
+// Build represents 'build' directive in docker-compose file
 type Build struct {
 	Context    string
 	Dockerfile string
 }
 
+// Render formats Build as YAML string
 func (b *Build) Render() string {
 	if b.Context == "" {
 		return ""

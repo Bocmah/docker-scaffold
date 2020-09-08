@@ -5,8 +5,10 @@ import (
 	"strings"
 )
 
+// Environment represents 'environment' directive in docker-compose file
 type Environment map[string]string
 
+// Render formats Environment as YAML string
 func (e Environment) Render() string {
 	length := len(e)
 
