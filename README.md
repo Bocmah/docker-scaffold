@@ -1,0 +1,1 @@
+[![Build Status](https://github.com/Bocmah/phpdocker-gen/workflows/main/badge.svg)](https://github.com/Bocmah/phpdocker-gen/actions)
