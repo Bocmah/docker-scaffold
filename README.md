@@ -1,1 +1,2 @@
 [![Build Status](https://github.com/Bocmah/phpdocker-gen/workflows/main/badge.svg)](https://github.com/Bocmah/phpdocker-gen/actions)
+[![codecov](https://codecov.io/gh/Bocmah/phpdocker-gen/branch/master/graph/badge.svg)](https://codecov.io/gh/Bocmah/phpdocker-gen)
