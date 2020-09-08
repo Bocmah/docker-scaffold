@@ -24,7 +24,7 @@ func (v *ServiceVolume) String() string {
 		return ""
 	}
 
-	return Mapping(v.Source, v.Target)
+	return mapping(v.Source, v.Target)
 }
 
 // ServiceVolumes represents service-level volumes directive

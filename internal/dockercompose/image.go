@@ -22,7 +22,7 @@ func (i *Image) Render() string {
 		return sb.String()
 	}
 
-	sb.WriteString(Mapping(i.Name, i.Tag))
+	sb.WriteString(mapping(i.Name, i.Tag))
 
 	return sb.String()
 }

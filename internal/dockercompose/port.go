@@ -44,8 +44,8 @@ func (m *PortsMapping) Render() string {
 	}
 
 	if m.Host == 0 {
-		return DoubleQuotted(strconv.Itoa(m.Container))
+		return doubleQuotted(strconv.Itoa(m.Container))
 	}
 
-	return DoubleQuotted(Mapping(strconv.Itoa(m.Host), strconv.Itoa(m.Container)))
+	return doubleQuotted(mapping(strconv.Itoa(m.Host), strconv.Itoa(m.Container)))
 }

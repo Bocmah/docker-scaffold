@@ -1,10 +1,6 @@
-package dockercompose_test
+package dockercompose
 
-import (
-	"testing"
-
-	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
-)
+import "testing"
 
 func TestDoubleQuotted(t *testing.T) {
 	tests := map[string]struct {
@@ -23,7 +19,7 @@ func TestDoubleQuotted(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := dockercompose.DoubleQuotted(tc.input)
+			got := doubleQuotted(tc.input)
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
 			}
@@ -61,7 +57,7 @@ func TestMapping(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := dockercompose.Mapping(tc.str1, tc.str2)
+			got := mapping(tc.str1, tc.str2)
 			if tc.want != got {
 				t.Fatalf("expected: %v, got: %v", tc.want, got)
 			}

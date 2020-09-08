@@ -22,7 +22,7 @@ func (c *Config) Render() string {
 	nesting := NestingLevel(1)
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("version: %s", DoubleQuotted(c.Version)))
+	sb.WriteString(fmt.Sprintf("version: %s", doubleQuotted(c.Version)))
 
 	sb.WriteString("\n")
 	sb.WriteString("services:")
