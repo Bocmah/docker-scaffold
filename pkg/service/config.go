@@ -68,7 +68,7 @@ func (c *FullConfig) GetServiceFiles() Files {
 	return files
 }
 
-// GetEnvironment returns collection of environment variables for services which requires them
+// GetEnvironment returns collection of environment variables for services which require them
 func (c *FullConfig) GetEnvironment() Environment {
 	if !c.Services.IsPresent(Database) {
 		return nil
