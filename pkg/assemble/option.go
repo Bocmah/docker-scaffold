@@ -12,6 +12,7 @@ type options struct {
 	volumes        dockercompose.ServiceVolumes
 }
 
+// Option can modify behaviour of the function which uses it
 type Option interface {
 	apply(*options)
 }
@@ -97,6 +98,7 @@ func (dp dockerfilePathOption) apply(opts *options) {
 	opts.dockerfilePath = string(dp)
 }
 
+// WithDockerfilePath adds Dockerfile path to options
 func WithDockerfilePath(path string) Option {
 	return dockerfilePathOption(path)
 }
@@ -109,6 +111,7 @@ func (e environmentOption) apply(opts *options) {
 	opts.environment = e.Environment
 }
 
+// WithEnvironment adds environment variables to options
 func WithEnvironment(env dockercompose.Environment) Option {
 	return environmentOption{Environment: env}
 }
@@ -121,6 +124,7 @@ func (n networksOption) apply(opts *options) {
 	opts.networks = n.Networks
 }
 
+// WithNetworks adds networks to options
 func WithNetworks(networks dockercompose.ServiceNetworks) Option {
 	return networksOption{Networks: networks}
 }
@@ -133,6 +137,7 @@ func (v volumesOption) apply(opts *options) {
 	opts.volumes = v.Volumes
 }
 
+// WithVolumes adds volumes to options
 func WithVolumes(volumes dockercompose.ServiceVolumes) Option {
 	return volumesOption{Volumes: volumes}
 }

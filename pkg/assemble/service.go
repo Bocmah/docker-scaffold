@@ -7,8 +7,10 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// ServiceAssembler is a function which can create dockercompose.Service from service.FullConfig for a specific service
 type ServiceAssembler func(conf *service.FullConfig, opts ...Option) *dockercompose.Service
 
+// NewServiceAssembler creates a specific ServiceAssembler for given service.SupportedService
 func NewServiceAssembler(s service.SupportedService) ServiceAssembler {
 	switch s {
 	case service.PHP:

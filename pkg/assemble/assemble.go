@@ -8,6 +8,7 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// DockerCompose assembles dockercompose config from service.FullConfig
 func DockerCompose(conf *service.FullConfig) *dockercompose.Config {
 	compose := &dockercompose.Config{
 		Version: "3.8",
