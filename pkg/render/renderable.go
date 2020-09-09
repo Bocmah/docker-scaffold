@@ -9,8 +9,11 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// RenderableFile is a file which can be transformed from template to resulting file
 type RenderableFile interface {
+	// GetTemplatePath returns path to template from which file will be rendered
 	GetTemplatePath() string
+	// GetOutputPath returns a path to which resulting file should be rendered
 	GetOutputPath() string
 }
 

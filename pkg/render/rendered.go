@@ -7,6 +7,7 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// Rendered is a rendered file
 type Rendered struct {
 	Path        string
 	CreatedDirs []string
@@ -24,6 +25,7 @@ func (r *Rendered) deleteCreatedDirs() error {
 	return nil
 }
 
+// RenderedServices is per-service rendered files
 type RenderedServices struct {
 	Services map[service.SupportedService][]*Rendered
 }

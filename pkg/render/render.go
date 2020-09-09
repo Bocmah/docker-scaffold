@@ -9,6 +9,7 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// RenderServices renders files for all services from service.FullConfig
 func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
 	renderedServices := RenderedServices{
 		Services: map[service.SupportedService][]*Rendered{},
@@ -29,6 +30,7 @@ func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
 	return &renderedServices, nil
 }
 
+// RenderDockerCompose renders docker-compose.yml file
 func RenderDockerCompose(conf *dockercompose.Config, outputPath string) error {
 	file, createErr := os.Create(outputPath)
 
