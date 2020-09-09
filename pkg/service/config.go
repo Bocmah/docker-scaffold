@@ -8,11 +8,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Config is interface for configs
 type Config interface {
+	// FillDefaultsIfNotSet fills values which are not present in the config with their default-equivalent
 	FillDefaultsIfNotSet()
+	// Validate validates config
 	Validate() error
 }
 
+// FullConfig is user-filled config from which resulted docker files will be generated
 type FullConfig struct {
 	AppName     string `yaml:"appName"`
 	ProjectRoot string `yaml:"projectRoot"`
@@ -52,6 +56,7 @@ func (c *FullConfig) Validate() error {
 	return errors
 }
 
+// GetServiceFiles returns paths to service files (Dockerfiles, configs, etc.) for each service in the config
 func (c *FullConfig) GetServiceFiles() Files {
 	outputPath := c.GetOutputPath()
 	files := map[SupportedService][]*File{}
@@ -63,6 +68,7 @@ func (c *FullConfig) GetServiceFiles() Files {
 	return files
 }
 
+// GetEnvironment returns collection of environment variables for services which requires them
 func (c *FullConfig) GetEnvironment() Environment {
 	if !c.Services.IsPresent(Database) {
 		return nil
@@ -73,6 +79,7 @@ func (c *FullConfig) GetEnvironment() Environment {
 	}
 }
 
+// GetOutputPath returns output path for resulting docker files
 func (c *FullConfig) GetOutputPath() string {
 	if c.OutputPath != "" {
 		return c.OutputPath
@@ -81,6 +88,7 @@ func (c *FullConfig) GetOutputPath() string {
 	return filepath.Join(c.ProjectRoot, ".docker")
 }
 
+// LoadConfigFromFile reads file at filepath, validates data and transforms it into FullConfig
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {

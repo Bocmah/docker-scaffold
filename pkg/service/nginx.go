@@ -2,6 +2,7 @@ package service
 
 import "fmt"
 
+// NginxConfig is a user-defined config for nginx
 type NginxConfig struct {
 	HTTPPort   int      `yaml:"httpPort"`
 	HTTPSPort  int      `yaml:"httpsPort"`
@@ -9,6 +10,7 @@ type NginxConfig struct {
 	FastCGI    *FastCGI `yaml:"fastCGI"`
 }
 
+// FastCGI is settings for a FastCGI protocol
 type FastCGI struct {
 	PassPort           int `yaml:"passPort"`
 	ReadTimeoutSeconds int `yaml:"readTimeoutSeconds"`

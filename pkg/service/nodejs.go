@@ -2,6 +2,7 @@ package service
 
 import "fmt"
 
+// NodeJSConfig is a user-defined config for Node.js
 type NodeJSConfig struct {
 	Version string
 }

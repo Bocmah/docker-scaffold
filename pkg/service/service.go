@@ -2,6 +2,7 @@ package service
 
 import "fmt"
 
+// SupportedService is one of the services supported by the tool
 type SupportedService int
 
 func (s SupportedService) String() string {
@@ -19,6 +20,7 @@ func (s SupportedService) String() string {
 	return services[s-1]
 }
 
+// SupportedServices returns a collection of all supported services
 func SupportedServices() []SupportedService {
 	return []SupportedService{
 		PHP,
@@ -35,6 +37,7 @@ const (
 	NodeJS
 )
 
+// ServicesConfig contains config for each service
 type ServicesConfig struct {
 	PHP      *PHPConfig
 	Nginx    *NginxConfig
@@ -75,6 +78,7 @@ func (s *ServicesConfig) Validate() error {
 	return errors
 }
 
+// IsPresent contains whether service is present in the config
 func (s *ServicesConfig) IsPresent(service SupportedService) bool {
 	switch service {
 	case PHP:
@@ -90,6 +94,7 @@ func (s *ServicesConfig) IsPresent(service SupportedService) bool {
 	}
 }
 
+// PresentServicesCount counts how many supported services are present in the config
 func (s *ServicesConfig) PresentServicesCount() int {
 	count := 0
 

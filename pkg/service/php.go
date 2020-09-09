@@ -2,6 +2,7 @@ package service
 
 import "fmt"
 
+// PHPConfig is a user-defined config for PHP
 type PHPConfig struct {
 	Version    string
 	Extensions []string
@@ -17,6 +18,7 @@ func (p *PHPConfig) FillDefaultsIfNotSet() {
 	}
 }
 
+// AddDatabaseExtension adds a specific PDO extension for given database system
 func (p *PHPConfig) AddDatabaseExtension(db SupportedSystem) {
 	switch db {
 	case MySQL:
@@ -44,6 +46,7 @@ func (p *PHPConfig) String() string {
 	return fmt.Sprintf("PHPConfig{Version: %s, Extensions: %v}", p.Version, p.Extensions)
 }
 
+// IsEmpty determines whether config is empty
 func (p *PHPConfig) IsEmpty() bool {
 	return p.Version == "" && len(p.Extensions) == 0
 }

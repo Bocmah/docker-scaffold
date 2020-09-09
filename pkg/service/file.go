@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 )
 
+// FileType is one of supported file types
 type FileType int
 
 const (
@@ -11,6 +12,7 @@ const (
 	ConfigFile
 )
 
+// File represents a service file (e.g. service Dockerfile or service config)
 type File struct {
 	Type            FileType
 	PathOnHost      string
@@ -18,14 +20,17 @@ type File struct {
 	TemplatePath    string
 }
 
+// GetTemplatePath returns path to template from which resulting service file can be rendered
 func (f *File) GetTemplatePath() string {
 	return f.TemplatePath
 }
 
+// GetOutputPath returns path to which resulting service file will be rendered
 func (f *File) GetOutputPath() string {
 	return f.PathOnHost
 }
 
+// IsMountable determines whether file can be mounted inside container
 func (f *File) IsMountable() bool {
 	return f.PathOnHost != "" && f.PathInContainer != ""
 }

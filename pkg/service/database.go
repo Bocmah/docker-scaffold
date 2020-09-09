@@ -2,8 +2,11 @@ package service
 
 import "fmt"
 
+// SupportedSystem is one of supported database systems (e.g. MySQL) by the tool
 type SupportedSystem string
 
+// DataPath returns path to database system data inside the container (required for volume management and retaining data
+// across container lifecycles
 func (s SupportedSystem) DataPath() string {
 	return defaults[s].dataPath
 }
@@ -32,12 +35,14 @@ var defaults = map[SupportedSystem]systemDefaults{
 	},
 }
 
+// Credentials is database credentials
 type Credentials struct {
 	Username     string
 	Password     string
 	RootPassword string `yaml:"rootPassword"`
 }
 
+// DatabaseConfig is a config for database service
 type DatabaseConfig struct {
 	System      SupportedSystem
 	Version     string
@@ -99,6 +104,7 @@ func (d *DatabaseConfig) String() string {
 	)
 }
 
+// Environment returns a collection of environment variables depending on the database system
 func (d *DatabaseConfig) Environment() map[string]string {
 	switch d.System {
 	case MySQL:
