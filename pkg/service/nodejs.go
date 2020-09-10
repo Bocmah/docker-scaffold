@@ -7,12 +7,14 @@ type NodeJSConfig struct {
 	Version string
 }
 
+// FillDefaultsIfNotSet fills default Node.js parameters if they are not present
 func (n *NodeJSConfig) FillDefaultsIfNotSet() {
 	if n.Version == "" {
 		n.Version = "latest"
 	}
 }
 
+// Validate validates Node.js parameters
 func (n *NodeJSConfig) Validate() error {
 	errors := &ValidationErrors{}
 

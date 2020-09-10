@@ -7,6 +7,7 @@ import (
 // FileType is one of supported file types
 type FileType int
 
+// All supported file types
 const (
 	Dockerfile FileType = iota + 1
 	ConfigFile
@@ -67,4 +68,5 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 	}
 }
 
+// Files is a per-service collection of files
 type Files map[SupportedService][]*File

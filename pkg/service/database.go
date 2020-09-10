@@ -11,6 +11,7 @@ func (s SupportedSystem) DataPath() string {
 	return defaults[s].dataPath
 }
 
+// All supported systems
 const (
 	MySQL      SupportedSystem = "mysql"
 	PostgreSQL SupportedSystem = "posgresql"
@@ -51,6 +52,7 @@ type DatabaseConfig struct {
 	Credentials `yaml:",inline"`
 }
 
+// FillDefaultsIfNotSet fills default database parameters if they are not present
 func (d *DatabaseConfig) FillDefaultsIfNotSet() {
 	if d.System == "" {
 		d.System = MySQL
@@ -65,6 +67,7 @@ func (d *DatabaseConfig) FillDefaultsIfNotSet() {
 	}
 }
 
+// Validate validates database parameters
 func (d *DatabaseConfig) Validate() error {
 	errors := &ValidationErrors{}
 

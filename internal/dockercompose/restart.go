@@ -5,6 +5,7 @@ import "fmt"
 // RestartPolicy is one of the restart policies supported by docker
 type RestartPolicy string
 
+// All supported restart policies
 const (
 	RestartPolicyNo            RestartPolicy = "no"
 	RestartPolicyAlways        RestartPolicy = "always"

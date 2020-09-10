@@ -16,6 +16,7 @@ type FastCGI struct {
 	ReadTimeoutSeconds int `yaml:"readTimeoutSeconds"`
 }
 
+// FillDefaultsIfNotSet fills default nginx parameters if they are not present
 func (n *NginxConfig) FillDefaultsIfNotSet() {
 	if n.HTTPPort == 0 {
 		n.HTTPPort = 80
@@ -38,6 +39,7 @@ func (n *NginxConfig) FillDefaultsIfNotSet() {
 	}
 }
 
+// Validate validates nginx parameters
 func (n *NginxConfig) Validate() error {
 	errors := &ValidationErrors{}
 

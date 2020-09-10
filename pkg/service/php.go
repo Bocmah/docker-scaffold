@@ -8,6 +8,7 @@ type PHPConfig struct {
 	Extensions []string
 }
 
+// FillDefaultsIfNotSet fills default PHP parameters if they are not present
 func (p *PHPConfig) FillDefaultsIfNotSet() {
 	if p.Version == "" {
 		p.Version = "7.4"
@@ -28,6 +29,7 @@ func (p *PHPConfig) AddDatabaseExtension(db SupportedSystem) {
 	}
 }
 
+// Validate validates PHP parameters
 func (p *PHPConfig) Validate() error {
 	errors := &ValidationErrors{}
 

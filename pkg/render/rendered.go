@@ -30,6 +30,7 @@ type RenderedServices struct {
 	Services map[service.SupportedService][]*Rendered
 }
 
+// DeleteAllCreatedFiles deletes all created files for all services
 func (rs *RenderedServices) DeleteAllCreatedFiles() error {
 	for _, rendered := range rs.Services {
 		for _, r := range rendered {

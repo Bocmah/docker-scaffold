@@ -8,6 +8,7 @@ import (
 // NetworkDriver is one of the network drivers supported by docker
 type NetworkDriver string
 
+// All supported network drivers
 const (
 	NetworkDriverBridge  NetworkDriver = "bridge"
 	NetworkDriverHost    NetworkDriver = "host"

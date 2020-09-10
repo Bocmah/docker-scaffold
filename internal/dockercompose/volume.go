@@ -8,6 +8,7 @@ import (
 // VolumeDriver is one of the volume drivers supported by docker
 type VolumeDriver string
 
+// All supported volume drivers
 const (
 	VolumeDriverLocal VolumeDriver = "local"
 )
@@ -89,6 +90,7 @@ func (v *NamedVolume) ToServiceVolume() *ServiceVolume {
 // NamedVolumes represents top-level 'volumes' directive in docker-compose file
 type NamedVolumes []*NamedVolume
 
+// Render formats NamedVolumes as YAML string
 func (v NamedVolumes) Render() string {
 	var sb strings.Builder
 

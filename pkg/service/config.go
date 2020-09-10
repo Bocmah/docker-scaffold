@@ -24,10 +24,12 @@ type FullConfig struct {
 	Services    *ServicesConfig
 }
 
+// FillDefaultsIfNotSet fills default parameters (if they are not present) for all services in the config
 func (c *FullConfig) FillDefaultsIfNotSet() {
 	c.Services.FillDefaultsIfNotSet()
 }
 
+// Validate validates all service parameters in the config
 func (c *FullConfig) Validate() error {
 	errors := &ValidationErrors{}
 
