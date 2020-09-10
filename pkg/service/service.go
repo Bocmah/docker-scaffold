@@ -30,6 +30,7 @@ func SupportedServices() []SupportedService {
 	}
 }
 
+// All supported services
 const (
 	PHP SupportedService = iota + 1
 	Nginx
@@ -45,6 +46,7 @@ type ServicesConfig struct {
 	NodeJS   *NodeJSConfig
 }
 
+// FillDefaultsIfNotSet fills default parameters (if they are not present) for all services in the config
 func (s *ServicesConfig) FillDefaultsIfNotSet() {
 	s.Database.FillDefaultsIfNotSet()
 
@@ -55,6 +57,7 @@ func (s *ServicesConfig) FillDefaultsIfNotSet() {
 	s.Nginx.FillDefaultsIfNotSet()
 }
 
+// Validate validates all service parameters in the config
 func (s *ServicesConfig) Validate() error {
 	errors := &ValidationErrors{}
 
