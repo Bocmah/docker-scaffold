@@ -102,3 +102,40 @@ func TestServicesConfig_PresentServicesCount(t *testing.T) {
 		})
 	}
 }
+
+func TestSupportedService_String(t *testing.T) {
+	tests := map[string]struct {
+		input service.SupportedService
+		want  string
+	}{
+		"PHP": {
+			input: service.PHP,
+			want:  "PHP",
+		},
+		"Nginx": {
+			input: service.Nginx,
+			want:  "Nginx",
+		},
+		"Database": {
+			input: service.Database,
+			want:  "Database",
+		},
+		"NodeJS": {
+			input: service.NodeJS,
+			want:  "NodeJS",
+		},
+		"unknown": {
+			input: service.SupportedService(100),
+			want:  "Unknown",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.String()
+			if tc.want != got {
+				t.Fatalf("expected: %v, got: %v", tc.want, got)
+			}
+		})
+	}
+}
