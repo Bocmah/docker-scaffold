@@ -30,6 +30,36 @@ func failTestOnErrorsOnCorrectInput(errs error, t *testing.T) {
 	}
 }
 
+func TestSupportedSystem_DataPath(t *testing.T) {
+	tests := map[string]struct {
+		input service.SupportedSystem
+		want  string
+	}{
+		"mysql": {
+			input: service.MySQL,
+			want:  "/var/lib/mysql",
+		},
+		"postgresql": {
+			input: service.PostgreSQL,
+			want:  "/var/lib/postgresql/data",
+		},
+		"unknown": {
+			input: service.SupportedSystem("unknown"),
+			want:  "",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.DataPath()
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("SupportedSystem.DataPath() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestDatabaseConfig_FillDefaultsIfNotSet(t *testing.T) {
 	db := service.DatabaseConfig{}
 
@@ -47,23 +77,67 @@ func TestDatabaseConfig_FillDefaultsIfNotSet(t *testing.T) {
 }
 
 func TestDatabaseConfig_ValidateIncorrectInput(t *testing.T) {
-	db := service.DatabaseConfig{System: "Unsupported"}
-
-	errs := db.Validate()
-
-	if errs != nil {
-		res := validationResult{
+	tests := map[string]struct {
+		conf     *service.DatabaseConfig
+		wantErrs []string
+	}{
+		"with unsupported system": {
+			conf: &service.DatabaseConfig{
+				System: service.SupportedSystem("unsupported"),
+			},
 			wantErrs: []string{
 				"Unsupported database system",
 				"DatabaseConfig port is required",
 			},
-			actualErrs:   errs,
-			validatedVal: db,
-		}
+		},
+		"MySQL without root password": {
+			conf: &service.DatabaseConfig{
+				System:  service.MySQL,
+				Version: "8.0",
+				Name:    "test-db",
+				Port:    3306,
+				Credentials: service.Credentials{
+					Username: "test-user",
+					Password: "test-password",
+				},
+			},
+			wantErrs: []string{
+				"DatabaseConfig root password is required for MySQL",
+			},
+		},
+		"PostgreSQL without password": {
+			conf: &service.DatabaseConfig{
+				System:  service.PostgreSQL,
+				Version: "12",
+				Name:    "test-db",
+				Port:    5432,
+				Credentials: service.Credentials{
+					Username:     "test-user",
+					RootPassword: "test-root-password",
+				},
+			},
+			wantErrs: []string{
+				"DatabaseConfig password is required for PostgreSQL",
+			},
+		},
+	}
 
-		failTestOnUnspottedError(res, t)
-	} else {
-		t.Errorf("Did not return any errors for value %v", db)
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			errs := tc.conf.Validate()
+
+			if errs != nil {
+				res := validationResult{
+					wantErrs:     tc.wantErrs,
+					actualErrs:   errs,
+					validatedVal: tc.conf,
+				}
+
+				failTestOnUnspottedError(res, t)
+			} else {
+				t.Errorf("Did not return any errors for value %v", tc.conf)
+			}
+		})
 	}
 }
 
@@ -87,7 +161,7 @@ func TestDatabaseConfig_Environment(t *testing.T) {
 		conf *service.DatabaseConfig
 		want map[string]string
 	}{
-		"mysql": {
+		"MySQL": {
 			conf: &service.DatabaseConfig{
 				System:  service.MySQL,
 				Version: "8.0",
@@ -106,7 +180,7 @@ func TestDatabaseConfig_Environment(t *testing.T) {
 				"MYSQL_PASSWORD":      "test-password",
 			},
 		},
-		"postgresql": {
+		"PostgreSQL": {
 			conf: &service.DatabaseConfig{
 				System:  service.PostgreSQL,
 				Version: "12",
@@ -122,6 +196,12 @@ func TestDatabaseConfig_Environment(t *testing.T) {
 				"POSTGRES_DB":       "test-db",
 				"POSTGRES_PASSWORD": "test-password",
 			},
+		},
+		"unknown": {
+			conf: &service.DatabaseConfig{
+				System: service.SupportedSystem("unknown"),
+			},
+			want: map[string]string{},
 		},
 	}
 
