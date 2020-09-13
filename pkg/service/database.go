@@ -8,7 +8,13 @@ type SupportedSystem string
 // DataPath returns path to database system data inside the container (required for volume management and retaining data
 // across container lifecycles
 func (s SupportedSystem) DataPath() string {
-	return defaults[s].dataPath
+	defs, ok := defaults[s]
+
+	if ok {
+		return defs.dataPath
+	}
+
+	return ""
 }
 
 // All supported systems
