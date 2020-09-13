@@ -1,21 +1,189 @@
 package service_test
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
-func TestLoadConfigFromFile(t *testing.T) {
-	got, err := service.LoadConfigFromFile("testdata/test.yaml")
+// Helpers
+func yamlMarshal(t *testing.T, source interface{}) []byte {
+	res, err := yaml.Marshal(source)
 
 	if err != nil {
-		t.Errorf("Got error when loading correct config. Error - %v, Value - %v", err, got)
+		t.Fatalf("failed to marshal: %s", err)
+	}
+
+	return res
+}
+
+func createTmpFile(t *testing.T, pattern string) *os.File {
+	tmpfile, err := ioutil.TempFile("", pattern)
+
+	if err != nil {
+		t.Fatalf("failed to create tempfile: %s", err)
+	}
+
+	return tmpfile
+}
+
+func writeToTmpFile(t *testing.T, tmpfile *os.File, content []byte) {
+	if _, err := tmpfile.Write(content); err != nil {
+		t.Fatalf("failed to write to tempfile: %s", err)
+	}
+}
+
+func closeTmpFile(t *testing.T, tmpfile *os.File) {
+	if err := tmpfile.Close(); err != nil {
+		t.Fatalf("failed to close tempfile: %s", err)
+	}
+}
+
+func TestLoadConfigFromFileIncorrectPath(t *testing.T) {
+	_, err := service.LoadConfigFromFile("/incorrect")
+
+	if err == nil {
+		t.Fatalf("encountered nil err when loading config from incorrect path")
+	}
+
+	if !strings.Contains(err.Error(), "read config") {
+		t.Fatalf("incorrect err value: %s", err.Error())
+	}
+}
+
+func TestLoadConfigFromIncorrectFile(t *testing.T) {
+	content := []byte("some random string")
+
+	tmpfile := createTmpFile(t, "example")
+
+	defer os.Remove(tmpfile.Name())
+
+	writeToTmpFile(t, tmpfile, content)
+	closeTmpFile(t, tmpfile)
+
+	_, loadConfigErr := service.LoadConfigFromFile(tmpfile.Name())
+
+	if loadConfigErr == nil {
+		t.Fatalf("encountered nil err when loading config from incorrect file")
+	}
+
+	if !strings.Contains(loadConfigErr.Error(), "parse config") {
+		t.Fatalf("incorrect err value: %s", loadConfigErr.Error())
+	}
+}
+
+func TestLoadConfigFromFileFailedValidation(t *testing.T) {
+	testConf := map[string]interface{}{
+		"appName":     "phpdocker-gen",
+		"projectRoot": "/home/user/projects/test",
+		"outputPath":  "/home/user/output",
+		"services": map[interface{}]interface{}{
+			"php": map[interface{}]interface{}{
+				"version": "7.4",
+				"extensions": []interface{}{
+					"mbstring",
+					"zip",
+					"exif",
+					"pcntl",
+					"gd",
+				},
+			},
+			// Incorrect database system
+			"database": map[interface{}]interface{}{
+				"system":       "mysqlll",
+				"version":      "5.7",
+				"name":         "test-db",
+				"port":         3306,
+				"username":     "bocmah",
+				"password":     "test",
+				"rootPassword": "testRoot",
+			},
+		},
+	}
+
+	yamlTestConf := yamlMarshal(t, testConf)
+
+	tmpfile := createTmpFile(t, "*.yaml")
+
+	defer os.Remove(tmpfile.Name())
+
+	writeToTmpFile(t, tmpfile, yamlTestConf)
+	closeTmpFile(t, tmpfile)
+
+	conf, err := service.LoadConfigFromFile(tmpfile.Name())
+
+	fmt.Println(conf)
+
+	if err == nil {
+		t.Fatalf("encountered nil err when loading config with failed validation")
+	}
+
+	if !strings.Contains(err.Error(), "validate config") {
+		t.Fatalf("incorrect err value: %s", err.Error())
+	}
+}
+
+func TestLoadConfigFromFile(t *testing.T) {
+	testConf := map[string]interface{}{
+		"appName":     "phpdocker-gen",
+		"projectRoot": "/home/user/projects/test",
+		"outputPath":  "/home/user/output",
+		"services": map[interface{}]interface{}{
+			"php": map[interface{}]interface{}{
+				"version": "7.4",
+				"extensions": []interface{}{
+					"mbstring",
+					"zip",
+					"exif",
+					"pcntl",
+					"gd",
+				},
+			},
+			"nginx": map[interface{}]interface{}{
+				"httpPort":   80,
+				"serverName": "test-server",
+				"fastCGI": map[interface{}]interface{}{
+					"passPort":           9000,
+					"readTimeoutSeconds": 60,
+				},
+			},
+			"nodejs": map[interface{}]interface{}{
+				"version": "10",
+			},
+			"database": map[interface{}]interface{}{
+				"system":       "mysql",
+				"version":      "5.7",
+				"name":         "test-db",
+				"port":         3306,
+				"username":     "bocmah",
+				"password":     "test",
+				"rootPassword": "testRoot",
+			},
+		},
+	}
+
+	yamlTestConf := yamlMarshal(t, testConf)
+
+	tmpfile := createTmpFile(t, "*.yaml")
+
+	defer os.Remove(tmpfile.Name())
+
+	writeToTmpFile(t, tmpfile, yamlTestConf)
+	closeTmpFile(t, tmpfile)
+
+	got, loadErr := service.LoadConfigFromFile(tmpfile.Name())
+
+	if loadErr != nil {
+		t.Errorf("Got error when loading correct config. Error - %v, Value - %v", loadErr, got)
 		return
 	}
 
@@ -54,8 +222,60 @@ func TestLoadConfigFromFile(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Incorrectly loaded configuration. \nWant %v\nGot %v", want, got)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("incorrectly loaded configuration (-want +got):\n%s", diff)
+	}
+}
+
+func TestLoadConfigFromFile_OneService(t *testing.T) {
+	testConf := map[string]interface{}{
+		"appName":     "phpdocker-gen",
+		"projectRoot": "/home/user/projects/test",
+		"outputPath":  "/home/user/output",
+		"services": map[interface{}]interface{}{
+			"php": map[interface{}]interface{}{
+				"version": "7.4",
+				"extensions": []interface{}{
+					"mbstring",
+					"zip",
+					"exif",
+					"pcntl",
+					"gd",
+				},
+			},
+		},
+	}
+
+	yamlTestConf := yamlMarshal(t, testConf)
+
+	tmpfile := createTmpFile(t, "*.yaml")
+
+	defer os.Remove(tmpfile.Name())
+
+	writeToTmpFile(t, tmpfile, yamlTestConf)
+	closeTmpFile(t, tmpfile)
+
+	got, loadErr := service.LoadConfigFromFile(tmpfile.Name())
+
+	if loadErr != nil {
+		t.Errorf("Got error when loading correct config. Error - %v, Value - %v", loadErr, got)
+		return
+	}
+
+	want := &service.FullConfig{
+		AppName:     "phpdocker-gen",
+		ProjectRoot: "/home/user/projects/test",
+		OutputPath:  "/home/user/output",
+		Services: &service.ServicesConfig{
+			PHP: &service.PHPConfig{
+				Version:    "7.4",
+				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd"},
+			},
+		},
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("incorrectly loaded configuration (-want +got):\n%s", diff)
 	}
 }
 
