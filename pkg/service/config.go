@@ -64,7 +64,9 @@ func (c *FullConfig) GetServiceFiles() Files {
 	files := map[SupportedService][]*File{}
 
 	for _, service := range c.Services.presentServices() {
-		files[service] = getFilesForService(service, outputPath)
+		if filesForService := getFilesForService(service, outputPath); filesForService != nil {
+			files[service] = filesForService
+		}
 	}
 
 	return files
