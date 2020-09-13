@@ -281,3 +281,44 @@ func TestFullConfig_GetEnvironment(t *testing.T) {
 		t.Errorf("conf.GetEnvironment() mismatch (-want +got):\n%s", diff)
 	}
 }
+
+func TestFullConfig_GetOutputPath(t *testing.T) {
+	conf := &service.FullConfig{
+		AppName:     "phpdocker-gen",
+		ProjectRoot: "/home/user/projects/test",
+		Services: &service.ServicesConfig{
+			PHP: &service.PHPConfig{
+				Version:    "7.4",
+				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
+			},
+			Nginx: &service.NginxConfig{
+				HTTPPort:   80,
+				HTTPSPort:  443,
+				ServerName: "test-server",
+				FastCGI: &service.FastCGI{
+					PassPort:           9000,
+					ReadTimeoutSeconds: 60,
+				},
+			},
+			NodeJS: &service.NodeJSConfig{
+				Version: "10",
+			},
+		},
+	}
+
+	want := filepath.Join(conf.ProjectRoot, ".docker")
+	got := conf.GetOutputPath()
+
+	if got != want {
+		t.Errorf("incorrect output path for config without explicitly set OutputPath. got %s, want %s", got, want)
+	}
+
+	conf.OutputPath = "/home/test/output"
+
+	want = "/home/test/output"
+	got = conf.GetOutputPath()
+
+	if got != want {
+		t.Errorf("incorrect output path for config with explicitly set OutputPath. got %s, want %s", got, want)
+	}
+}
