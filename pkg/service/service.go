@@ -48,23 +48,45 @@ type ServicesConfig struct {
 
 // FillDefaultsIfNotSet fills default parameters (if they are not present) for all services in the config
 func (s *ServicesConfig) FillDefaultsIfNotSet() {
-	s.Database.FillDefaultsIfNotSet()
+	if s.Database != nil {
+		s.Database.FillDefaultsIfNotSet()
+	}
 
-	s.PHP.AddDatabaseExtension(s.Database.System)
+	if s.PHP != nil {
+		if s.Database != nil {
+			s.PHP.AddDatabaseExtension(s.Database.System)
 
-	s.PHP.FillDefaultsIfNotSet()
-	s.NodeJS.FillDefaultsIfNotSet()
-	s.Nginx.FillDefaultsIfNotSet()
+		}
+
+		s.PHP.FillDefaultsIfNotSet()
+	}
+
+	if s.NodeJS != nil {
+		s.NodeJS.FillDefaultsIfNotSet()
+	}
+
+	if s.Nginx != nil {
+		s.Nginx.FillDefaultsIfNotSet()
+	}
 }
 
 // Validate validates all service parameters in the config
 func (s *ServicesConfig) Validate() error {
 	errors := &ValidationErrors{}
 
-	services := []Config{s.PHP, s.NodeJS, s.Nginx, s.Database}
+	services := map[SupportedService]Config{
+		PHP:      s.PHP,
+		NodeJS:   s.NodeJS,
+		Nginx:    s.Nginx,
+		Database: s.Database,
+	}
 
-	for _, s := range services {
-		errs := s.Validate()
+	for serv, conf := range services {
+		if !s.IsPresent(serv) {
+			continue
+		}
+
+		errs := conf.Validate()
 		if errs != nil {
 			if e, ok := errs.(*ValidationErrors); ok {
 				errors.Merge(e)
