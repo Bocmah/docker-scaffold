@@ -222,3 +222,62 @@ func TestFullConfig_GetServiceFiles(t *testing.T) {
 		t.Errorf("conf.GetServiceFiles() mismatch (-want +got):\n%s", diff)
 	}
 }
+
+func TestFullConfig_GetEnvironment(t *testing.T) {
+	conf := &service.FullConfig{
+		AppName:     "phpdocker-gen",
+		ProjectRoot: "/home/user/projects/test",
+		OutputPath:  "/home/user/output",
+		Services: &service.ServicesConfig{
+			PHP: &service.PHPConfig{
+				Version:    "7.4",
+				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
+			},
+			Nginx: &service.NginxConfig{
+				HTTPPort:   80,
+				HTTPSPort:  443,
+				ServerName: "test-server",
+				FastCGI: &service.FastCGI{
+					PassPort:           9000,
+					ReadTimeoutSeconds: 60,
+				},
+			},
+			NodeJS: &service.NodeJSConfig{
+				Version: "10",
+			},
+		},
+	}
+
+	env := conf.GetEnvironment()
+
+	if env != nil {
+		t.Errorf("encountered non-nil environment when nil is expected: %s", env)
+	}
+
+	conf.Services.Database = &service.DatabaseConfig{
+		System:  service.MySQL,
+		Version: "5.7",
+		Name:    "test-db",
+		Port:    3306,
+		Credentials: service.Credentials{
+			Username:     "bocmah",
+			Password:     "test",
+			RootPassword: "testRoot",
+		},
+	}
+
+	env = conf.GetEnvironment()
+
+	wantEnv := service.Environment{
+		service.Database: {
+			"MYSQL_ROOT_PASSWORD": "testRoot",
+			"MYSQL_DATABASE":      "test-db",
+			"MYSQL_USER":          "bocmah",
+			"MYSQL_PASSWORD":      "test",
+		},
+	}
+
+	if diff := cmp.Diff(wantEnv, env); diff != "" {
+		t.Errorf("conf.GetEnvironment() mismatch (-want +got):\n%s", diff)
+	}
+}
