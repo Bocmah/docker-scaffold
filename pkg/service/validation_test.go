@@ -19,7 +19,7 @@ func equal(e1 service.ValidationErrors, e2 service.ValidationErrors) bool {
 	return true
 }
 
-func TestErrorString(t *testing.T) {
+func TestValidationErrorsErrorString(t *testing.T) {
 	errors := service.ValidationErrors{"Sample error", "Sample error 2"}
 
 	got := errors.Error()
@@ -30,7 +30,7 @@ func TestErrorString(t *testing.T) {
 	}
 }
 
-func TestAdd(t *testing.T) {
+func TestValidationErrors_AddAdd(t *testing.T) {
 	got := service.ValidationErrors{}
 
 	got.Add("Sample error")
@@ -43,7 +43,7 @@ func TestAdd(t *testing.T) {
 	}
 }
 
-func TestEmptyAdd(t *testing.T) {
+func TestValidationErrorsEmptyAdd(t *testing.T) {
 	got := service.ValidationErrors{}
 
 	got.Add("Sample error")
@@ -56,7 +56,7 @@ func TestEmptyAdd(t *testing.T) {
 	}
 }
 
-func TestIsEmpty(t *testing.T) {
+func TestValidationErrors_IsEmpty(t *testing.T) {
 	if !(&service.ValidationErrors{}).IsEmpty() {
 		t.Errorf("Failed to validate that empty ValidationErrors is actually empty")
 	}
@@ -66,7 +66,7 @@ func TestIsEmpty(t *testing.T) {
 	}
 }
 
-func TestMerge(t *testing.T) {
+func TestValidationErrors_Merge(t *testing.T) {
 	got := &service.ValidationErrors{"Error 1"}
 
 	got.Merge(&service.ValidationErrors{"Error 2"})
