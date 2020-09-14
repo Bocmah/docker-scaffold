@@ -1,7 +1,6 @@
 package service_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -119,9 +118,7 @@ func TestLoadConfigFromFileFailedValidation(t *testing.T) {
 	writeToTmpFile(t, tmpfile, yamlTestConf)
 	closeTmpFile(t, tmpfile)
 
-	conf, err := service.LoadConfigFromFile(tmpfile.Name())
-
-	fmt.Println(conf)
+	_, err := service.LoadConfigFromFile(tmpfile.Name())
 
 	if err == nil {
 		t.Fatalf("encountered nil err when loading config with failed validation")
