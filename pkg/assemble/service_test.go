@@ -136,12 +136,18 @@ func TestNginxAssemble(t *testing.T) {
 	assertAssemblerReturnsNilIfServiceIsNotPresent(t, assembler, service.Nginx)
 
 	conf := dummyConf()
+	confWithoutPorts := dummyConf()
+
+	confWithoutPorts.Services.Nginx.HTTPPort = 0
+	confWithoutPorts.Services.Nginx.HTTPSPort = 0
 
 	tests := map[string]struct {
+		conf *service.FullConfig
 		opts []assemble.Option
 		want *dockercompose.Service
 	}{
 		"no options": {
+			conf: conf,
 			want: &dockercompose.Service{
 				Name: "webserver",
 				Image: &dockercompose.Image{
@@ -160,6 +166,7 @@ func TestNginxAssemble(t *testing.T) {
 			},
 		},
 		"with options": {
+			conf: conf,
 			opts: []assemble.Option{
 				assemble.WithNetworks(dockercompose.ServiceNetworks{
 					&dockercompose.Network{Name: "test-app-network", Driver: dockercompose.NetworkDriverBridge},
@@ -189,11 +196,30 @@ func TestNginxAssemble(t *testing.T) {
 				},
 			},
 		},
+		"without ports": {
+			conf: confWithoutPorts,
+			want: &dockercompose.Service{
+				Name: "webserver",
+				Image: &dockercompose.Image{
+					Name: "nginx",
+					Tag:  "alpine",
+				},
+				ContainerName: "webserver",
+				Restart:       dockercompose.RestartPolicyUnlessStopped,
+				Ports: dockercompose.Ports{
+					&dockercompose.PortsMapping{Host: 80, Container: 80},
+					&dockercompose.PortsMapping{Host: 443, Container: 443},
+				},
+				Volumes: dockercompose.ServiceVolumes{
+					&dockercompose.ServiceVolume{Source: "/home/test/app", Target: "/var/www"},
+				},
+			},
+		},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := assembler(conf, tc.opts...)
+			got := assembler(tc.conf, tc.opts...)
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Fatalf("nginx assembler mismatch (-want +got):\n%s", diff)
 			}
