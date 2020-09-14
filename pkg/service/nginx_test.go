@@ -28,24 +28,58 @@ func TestNginx_FillDefaultsIfNotSet(t *testing.T) {
 }
 
 func TestNginx_ValidateIncorrectInput(t *testing.T) {
-	nginx := service.NginxConfig{}
-
-	errs := nginx.Validate()
-
-	if errs != nil {
-		res := validationResult{
+	tests := map[string]struct {
+		conf     *service.NginxConfig
+		wantErrs []string
+	}{
+		"empty config": {
+			conf: &service.NginxConfig{},
 			wantErrs: []string{
 				"nginx port is required",
 				"nginx FastCGI pass port is required",
 				"nginx FastCGI read timeout is required",
 			},
-			actualErrs:   errs,
-			validatedVal: nginx,
-		}
+		},
+		"without FastCGI pass port": {
+			conf: &service.NginxConfig{
+				HTTPPort:   80,
+				HTTPSPort:  443,
+				ServerName: "test-server",
+				FastCGI:    &service.FastCGI{ReadTimeoutSeconds: 60},
+			},
+			wantErrs: []string{
+				"nginx FastCGI pass port is required",
+			},
+		},
+		"without FastCGI read timeout": {
+			conf: &service.NginxConfig{
+				HTTPPort:   80,
+				HTTPSPort:  443,
+				ServerName: "test-server",
+				FastCGI:    &service.FastCGI{PassPort: 9000},
+			},
+			wantErrs: []string{
+				"nginx FastCGI read timeout is required",
+			},
+		},
+	}
 
-		failTestOnUnspottedError(res, t)
-	} else {
-		t.Errorf("Did not return any errors for value %v", nginx)
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			errs := tc.conf.Validate()
+
+			if errs != nil {
+				res := validationResult{
+					wantErrs:     tc.wantErrs,
+					actualErrs:   errs,
+					validatedVal: tc.conf,
+				}
+
+				failTestOnUnspottedError(res, t)
+			} else {
+				t.Errorf("Did not return any errors for value %v", tc.conf)
+			}
+		})
 	}
 }
 
