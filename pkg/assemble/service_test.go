@@ -21,10 +21,10 @@ func assertAssemblerReturnsNilIfServiceIsNotPresent(t *testing.T, assembler asse
 		Services:    &service.ServicesConfig{},
 	}
 
-	res := assembler(conf)
+	got := assembler(conf)
 
-	if res != nil {
-		t.Errorf("assembler did not return nil for conf without %s. Instead it returned %v", serv, res)
+	if got != nil {
+		t.Errorf("assembler did not return nil for conf without %s. Instead it returned %v", serv, got)
 	}
 }
 
@@ -357,5 +357,15 @@ func TestNodeJSAssemble(t *testing.T) {
 				t.Fatalf("Database assembler mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestUnknownAssemble(t *testing.T) {
+	assembler := assemble.NewServiceAssembler(service.SupportedService(100))
+
+	got := assembler(dummyConf())
+
+	if got != nil {
+		t.Fatalf("Unknown assembler did not return nil. Returned %v instead", got)
 	}
 }
