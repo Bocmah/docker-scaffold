@@ -16,6 +16,8 @@ type validationResult struct {
 }
 
 func failTestOnUnspottedError(result validationResult, t *testing.T) {
+	t.Helper()
+
 	for _, e := range result.wantErrs {
 		if !strings.Contains(result.actualErrs.Error(), e) {
 			t.Errorf("Failed to spot error %s in value %v", e, result.validatedVal)
@@ -25,6 +27,8 @@ func failTestOnUnspottedError(result validationResult, t *testing.T) {
 }
 
 func failTestOnErrorsOnCorrectInput(errs error, t *testing.T) {
+	t.Helper()
+
 	if errs != nil {
 		t.Errorf("Following errors were returned despite correct inputs %v", errs)
 	}

@@ -16,6 +16,8 @@ import (
 
 // Helpers
 func yamlMarshal(t *testing.T, source interface{}) []byte {
+	t.Helper()
+
 	res, err := yaml.Marshal(source)
 
 	if err != nil {
@@ -26,6 +28,8 @@ func yamlMarshal(t *testing.T, source interface{}) []byte {
 }
 
 func createTmpFile(t *testing.T, pattern string) *os.File {
+	t.Helper()
+
 	tmpfile, err := ioutil.TempFile("", pattern)
 
 	if err != nil {
@@ -36,12 +40,16 @@ func createTmpFile(t *testing.T, pattern string) *os.File {
 }
 
 func writeToTmpFile(t *testing.T, tmpfile *os.File, content []byte) {
+	t.Helper()
+
 	if _, err := tmpfile.Write(content); err != nil {
 		t.Fatalf("failed to write to tempfile: %s", err)
 	}
 }
 
 func closeTmpFile(t *testing.T, tmpfile *os.File) {
+	t.Helper()
+
 	if err := tmpfile.Close(); err != nil {
 		t.Fatalf("failed to close tempfile: %s", err)
 	}
