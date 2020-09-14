@@ -41,10 +41,11 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 	conf := &service.ServicesConfig{}
 
 	services := map[service.SupportedService]bool{
-		service.PHP:      false,
-		service.NodeJS:   false,
-		service.Nginx:    false,
-		service.Database: false,
+		service.PHP:                   false,
+		service.NodeJS:                false,
+		service.Nginx:                 false,
+		service.Database:              false,
+		service.SupportedService(100): false,
 	}
 
 	for s, expectedPresent := range services {
@@ -56,10 +57,11 @@ func TestServicesConfig_IsPresent(t *testing.T) {
 	conf = dummyConfigWithAllServices()
 
 	services = map[service.SupportedService]bool{
-		service.PHP:      true,
-		service.NodeJS:   true,
-		service.Nginx:    true,
-		service.Database: true,
+		service.PHP:                   true,
+		service.NodeJS:                true,
+		service.Nginx:                 true,
+		service.Database:              true,
+		service.SupportedService(100): false,
 	}
 
 	for s, expectedPresent := range services {
