@@ -76,3 +76,42 @@ func TestValidationErrors_Merge(t *testing.T) {
 		t.Errorf("Incorrect merge. Want %v. Got %v", want, got)
 	}
 }
+
+func TestValidationErrors_Has(t *testing.T) {
+	tests := map[string]struct {
+		input service.ValidationErrors
+		error string
+		want  bool
+	}{
+		"simple": {
+			input: service.ValidationErrors{"Test error"},
+			error: "Test error",
+			want:  true,
+		},
+		"more than one error": {
+			input: service.ValidationErrors{"Test error", "Another error"},
+			error: "Test error",
+			want:  true,
+		},
+		"doesn't have": {
+			input: service.ValidationErrors{"Test error"},
+			error: "Another error",
+			want:  false,
+		},
+		"empty": {
+			input: service.ValidationErrors{},
+			error: "Test error",
+			want:  false,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := tc.input.Has(tc.error)
+
+			if got != tc.want {
+				t.Fatalf("incorrect ValidationErrors.Has() behaviour. got %v want %v", got, tc.want)
+			}
+		})
+	}
+}
