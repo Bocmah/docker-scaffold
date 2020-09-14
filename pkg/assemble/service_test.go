@@ -11,6 +11,23 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+func assertAssemblerReturnsNilIfServiceIsNotPresent(t *testing.T, assembler assemble.ServiceAssembler, serv service.SupportedService) {
+	t.Helper()
+
+	conf := &service.FullConfig{
+		AppName:     "Test App",
+		ProjectRoot: "/home/test/app",
+		OutputPath:  "/home/test/app/.docker",
+		Services:    &service.ServicesConfig{},
+	}
+
+	res := assembler(conf)
+
+	if res != nil {
+		t.Errorf("assembler did not return nil for conf without %s. Instead it returned %v", serv, res)
+	}
+}
+
 func dummyConf() *service.FullConfig {
 	return &service.FullConfig{
 		AppName:     "Test App",
@@ -49,6 +66,10 @@ func dummyConf() *service.FullConfig {
 }
 
 func TestPhpAssemble(t *testing.T) {
+	assembler := assemble.NewServiceAssembler(service.PHP)
+
+	assertAssemblerReturnsNilIfServiceIsNotPresent(t, assembler, service.PHP)
+
 	conf := dummyConf()
 
 	tests := map[string]struct {
@@ -99,8 +120,6 @@ func TestPhpAssemble(t *testing.T) {
 		},
 	}
 
-	assembler := assemble.NewServiceAssembler(service.PHP)
-
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got := assembler(conf, tc.opts...)
@@ -112,6 +131,10 @@ func TestPhpAssemble(t *testing.T) {
 }
 
 func TestNginxAssemble(t *testing.T) {
+	assembler := assemble.NewServiceAssembler(service.Nginx)
+
+	assertAssemblerReturnsNilIfServiceIsNotPresent(t, assembler, service.Nginx)
+
 	conf := dummyConf()
 
 	tests := map[string]struct {
@@ -168,8 +191,6 @@ func TestNginxAssemble(t *testing.T) {
 		},
 	}
 
-	assembler := assemble.NewServiceAssembler(service.Nginx)
-
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got := assembler(conf, tc.opts...)
@@ -181,6 +202,10 @@ func TestNginxAssemble(t *testing.T) {
 }
 
 func TestDatabaseAssemble(t *testing.T) {
+	assembler := assemble.NewServiceAssembler(service.Database)
+
+	assertAssemblerReturnsNilIfServiceIsNotPresent(t, assembler, service.Database)
+
 	conf := dummyConf()
 
 	tests := map[string]struct {
@@ -239,8 +264,6 @@ func TestDatabaseAssemble(t *testing.T) {
 		},
 	}
 
-	assembler := assemble.NewServiceAssembler(service.Database)
-
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got := assembler(conf, tc.opts...)
@@ -252,6 +275,10 @@ func TestDatabaseAssemble(t *testing.T) {
 }
 
 func TestNodeJSAssemble(t *testing.T) {
+	assembler := assemble.NewServiceAssembler(service.NodeJS)
+
+	assertAssemblerReturnsNilIfServiceIsNotPresent(t, assembler, service.NodeJS)
+
 	conf := dummyConf()
 
 	tests := map[string]struct {
@@ -296,8 +323,6 @@ func TestNodeJSAssemble(t *testing.T) {
 			},
 		},
 	}
-
-	assembler := assemble.NewServiceAssembler(service.NodeJS)
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
