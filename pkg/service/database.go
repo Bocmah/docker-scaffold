@@ -2,7 +2,7 @@ package service
 
 import "fmt"
 
-// SupportedSystem is one of supported database systems (e.g. MySQL) by the tool
+// SupportedSystem is one of database systems supported by the tool (e.g. MySQL)
 type SupportedSystem string
 
 // DataPath returns path to database system data inside the container (required for volume management and retaining data
