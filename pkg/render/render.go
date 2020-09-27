@@ -10,6 +10,7 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// AppFs is the filesystem in use
 var AppFs = afero.NewOsFs()
 
 // RenderServices renders files for all services from service.FullConfig
