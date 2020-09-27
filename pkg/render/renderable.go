@@ -26,23 +26,17 @@ func render(renderable RenderableFile, conf *service.FullConfig) (*Rendered, err
 		return nil, fmt.Errorf("parse render: %s", parseErr)
 	}
 
-	absOutputPath, absErr := filepath.Abs(renderable.GetOutputPath())
-
-	if absErr != nil {
-		return nil, fmt.Errorf("absolute path to created output dir: %s", absErr)
-	}
-
-	outputDir := filepath.Dir(absOutputPath)
+	outputDir := filepath.Dir(renderable.GetOutputPath())
 
 	if !pathExists(outputDir) {
-		if mkdirErr := os.MkdirAll(outputDir, 0755); mkdirErr != nil {
+		if mkdirErr := AppFs.MkdirAll(outputDir, 0755); mkdirErr != nil {
 			return nil, fmt.Errorf("MkdirAll: %s", mkdirErr)
 		}
 
 		rendered.CreatedDirs = append(rendered.CreatedDirs, outputDir)
 	}
 
-	file, createFileErr := os.Create(renderable.GetOutputPath())
+	file, createFileErr := AppFs.Create(renderable.GetOutputPath())
 
 	if createFileErr != nil {
 		return nil, fmt.Errorf("create output file: %s", createFileErr)
@@ -54,13 +48,13 @@ func render(renderable RenderableFile, conf *service.FullConfig) (*Rendered, err
 		return nil, fmt.Errorf("execute render: %s", executeErr)
 	}
 
-	rendered.Path = absOutputPath
+	rendered.Path = renderable.GetOutputPath()
 
 	return rendered, nil
 }
 
 func pathExists(path string) bool {
-	if _, statErr := os.Stat(path); os.IsNotExist(statErr) {
+	if _, statErr := AppFs.Stat(path); os.IsNotExist(statErr) {
 		return false
 	}
 

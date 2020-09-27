@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/spf13/afero"
+
 	"gopkg.in/yaml.v2"
 
 	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
@@ -18,22 +20,24 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+type renderedServicesWithFs struct {
+	services *render.RenderedServices
+	fs       afero.Fs
+}
+
 func TestRenderTemplatesFromConfiguration(t *testing.T) {
-	absPathToOutput, err := filepath.Abs("testdata")
+	render.AppFs = afero.NewMemMapFs()
 
-	if err != nil {
-		t.Fatalf("failed to find absolute path to testdata dir: %s", err)
+	const testDir = "output"
+	const dockerDir = ".docker"
+
+	mkdirErr := render.AppFs.Mkdir(testDir, 0755)
+
+	if mkdirErr != nil {
+		t.Fatalf("failed to create test dir: %s", mkdirErr)
 	}
 
-	dir, tempDirErr := ioutil.TempDir(absPathToOutput, "output")
-
-	if tempDirErr != nil {
-		t.Fatalf("failed to create temp dir: %s", tempDirErr)
-	}
-
-	defer os.RemoveAll(dir)
-
-	outputPath := dir + "/.docker"
+	outputPath := filepath.Join(testDir, dockerDir)
 
 	conf := &service.FullConfig{
 		AppName:     "awesome-app",
@@ -76,14 +80,8 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		t.Fatalf("Encountered non-nil error in correct test case: %v", renderErr)
 	}
 
-	if _, err := os.Stat(outputPath); os.IsNotExist(err) {
+	if _, err := render.AppFs.Stat(outputPath); os.IsNotExist(err) {
 		t.Fatalf("Output path %v still doesn't exist after calling rendering function", outputPath)
-	}
-
-	absPath, absErr := filepath.Abs(outputPath + string(os.PathSeparator))
-
-	if absErr != nil {
-		t.Fatal(absErr)
 	}
 
 	wantRendered := &render.RenderedServices{
@@ -91,19 +89,19 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 			service.PHP: {
 				{
 					Path:        filepath.Join(outputPath, "php/Dockerfile"),
-					CreatedDirs: []string{filepath.Join(absPath, "php")},
+					CreatedDirs: []string{filepath.Join(outputPath, "php")},
 				},
 			},
 			service.Nginx: {
 				{
 					Path:        filepath.Join(outputPath, "nginx/conf.d/app.conf"),
-					CreatedDirs: []string{filepath.Join(absPath, "nginx/conf.d")},
+					CreatedDirs: []string{filepath.Join(outputPath, "nginx/conf.d")},
 				},
 			},
 			service.NodeJS: {
 				{
 					Path:        filepath.Join(outputPath, "nodejs/Dockerfile"),
-					CreatedDirs: []string{filepath.Join(absPath, "nodejs")},
+					CreatedDirs: []string{filepath.Join(outputPath, "nodejs")},
 				},
 			},
 		},
@@ -113,32 +111,28 @@ func TestRenderTemplatesFromConfiguration(t *testing.T) {
 		t.Fatalf("RenderedServices mismatch (-want +got):\n%s", diff)
 	}
 
-	testFilesRoot := "testdata/template_render/.docker"
+	const testFilesRoot = "testdata/template_render/.docker"
 	testFiles := map[service.SupportedService][]string{
 		service.PHP:    {filepath.Join(testFilesRoot, "php/Dockerfile")},
 		service.Nginx:  {filepath.Join(testFilesRoot, "nginx/conf.d/app.conf")},
 		service.NodeJS: {filepath.Join(testFilesRoot, "nodejs/Dockerfile")},
 	}
 
-	if diff := compareRenderedWithExpected(rendered, testFiles); diff != "" {
+	if diff := compareRenderedWithExpected(&renderedServicesWithFs{services: rendered, fs: render.AppFs}, testFiles); diff != "" {
 		t.Fatalf(diff)
 	}
 }
 
 func TestRenderDockerCompose(t *testing.T) {
-	absPathToOutput, absErr := filepath.Abs("testdata")
+	render.AppFs = afero.NewMemMapFs()
 
-	if absErr != nil {
-		t.Fatalf("failed to find absolute path to testdata dir: %s", absErr)
+	const testDir = "output"
+
+	mkdirErr := render.AppFs.Mkdir(testDir, 0755)
+
+	if mkdirErr != nil {
+		t.Fatalf("failed to create test dir: %s", mkdirErr)
 	}
-
-	dir, tempDirErr := ioutil.TempDir(absPathToOutput, "output")
-
-	if tempDirErr != nil {
-		t.Fatalf("failed to create temp dir: %s", tempDirErr)
-	}
-
-	defer os.RemoveAll(dir)
 
 	network := &dockercompose.Network{Name: "awesome-app-network", Driver: dockercompose.NetworkDriverBridge}
 	namedVolume := &dockercompose.NamedVolume{Name: "awesome-app-data", Driver: dockercompose.VolumeDriverLocal}
@@ -216,7 +210,7 @@ func TestRenderDockerCompose(t *testing.T) {
 		},
 	}
 
-	outputPath := filepath.Join(dir, "docker-compose.yml")
+	outputPath := filepath.Join(testDir, "docker-compose.yml")
 
 	renderErr := render.RenderDockerCompose(conf, outputPath)
 
@@ -224,7 +218,7 @@ func TestRenderDockerCompose(t *testing.T) {
 		t.Fatalf("encountered non nil err with correct configuration: %s", renderErr)
 	}
 
-	data, readErr := ioutil.ReadFile(outputPath)
+	data, readErr := afero.ReadFile(render.AppFs, outputPath)
 
 	if readErr != nil {
 		t.Fatalf("failed to read resulting docker-compose.yml: %s", readErr)
@@ -320,9 +314,9 @@ func TestRenderDockerCompose(t *testing.T) {
 	}
 }
 
-func compareRenderedWithExpected(renderedServices *render.RenderedServices, testFiles map[service.SupportedService][]string) (diff string) {
+func compareRenderedWithExpected(renderedServicesWithFs *renderedServicesWithFs, testFiles map[service.SupportedService][]string) (diff string) {
 	for serv, files := range testFiles {
-		renderedService, ok := renderedServices.Services[serv]
+		renderedService, ok := renderedServicesWithFs.services.Services[serv]
 
 		if !ok {
 			return fmt.Sprintf("Service %s was not rendered", serv)
@@ -335,7 +329,7 @@ func compareRenderedWithExpected(renderedServices *render.RenderedServices, test
 				return fmt.Sprintf("Could not read expected file for service %s at path %s. Reason: %s", serv, file, readExpectedErr)
 			}
 
-			renderedFile, readRenderedErr := ioutil.ReadFile(renderedService[index].Path)
+			renderedFile, readRenderedErr := afero.ReadFile(renderedServicesWithFs.fs, renderedService[index].Path)
 
 			if readRenderedErr != nil {
 				return fmt.Sprintf("Could not read expected file for service %s at path %s. Reason: %s", serv, renderedService[index].Path, readRenderedErr)

@@ -2,12 +2,15 @@ package render
 
 import (
 	"fmt"
-	"os"
+
+	"github.com/spf13/afero"
 
 	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
+
+var AppFs = afero.NewOsFs()
 
 // RenderServices renders files for all services from service.FullConfig
 func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
@@ -32,7 +35,7 @@ func RenderServices(conf *service.FullConfig) (*RenderedServices, error) {
 
 // RenderDockerCompose renders docker-compose.yml file
 func RenderDockerCompose(conf *dockercompose.Config, outputPath string) error {
-	file, createErr := os.Create(outputPath)
+	file, createErr := AppFs.Create(outputPath)
 
 	if createErr != nil {
 		return fmt.Errorf("create output file: %s", createErr)

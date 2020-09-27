@@ -2,7 +2,6 @@ package render
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
@@ -15,7 +14,7 @@ type Rendered struct {
 
 func (r *Rendered) deleteCreatedDirs() error {
 	for _, created := range r.CreatedDirs {
-		err := os.RemoveAll(created)
+		err := AppFs.RemoveAll(created)
 
 		if err != nil {
 			return fmt.Errorf("remove all: %s", err)
