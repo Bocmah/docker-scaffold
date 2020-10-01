@@ -1,11 +1,11 @@
 package service_test
 
 import (
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/spf13/afero"
 
 	"gopkg.in/yaml.v2"
 
@@ -27,10 +27,10 @@ func yamlMarshal(t *testing.T, source interface{}) []byte {
 	return res
 }
 
-func createTmpFile(t *testing.T, pattern string) *os.File {
+func createTmpFile(t *testing.T, fs afero.Fs, pattern string) afero.File {
 	t.Helper()
 
-	tmpfile, err := ioutil.TempFile("", pattern)
+	tmpfile, err := afero.TempFile(fs, "", pattern)
 
 	if err != nil {
 		t.Fatalf("failed to create tempfile: %s", err)
@@ -39,7 +39,7 @@ func createTmpFile(t *testing.T, pattern string) *os.File {
 	return tmpfile
 }
 
-func writeToTmpFile(t *testing.T, tmpfile *os.File, content []byte) {
+func writeToTmpFile(t *testing.T, tmpfile afero.File, content []byte) {
 	t.Helper()
 
 	if _, err := tmpfile.Write(content); err != nil {
@@ -47,7 +47,7 @@ func writeToTmpFile(t *testing.T, tmpfile *os.File, content []byte) {
 	}
 }
 
-func closeTmpFile(t *testing.T, tmpfile *os.File) {
+func closeTmpFile(t *testing.T, tmpfile afero.File) {
 	t.Helper()
 
 	if err := tmpfile.Close(); err != nil {
@@ -70,9 +70,9 @@ func TestLoadConfigFromFileIncorrectPath(t *testing.T) {
 func TestLoadConfigFromIncorrectFile(t *testing.T) {
 	content := []byte("some random string")
 
-	tmpfile := createTmpFile(t, "example")
+	service.AppFs = afero.NewMemMapFs()
 
-	defer os.Remove(tmpfile.Name())
+	tmpfile := createTmpFile(t, service.AppFs, "example")
 
 	writeToTmpFile(t, tmpfile, content)
 	closeTmpFile(t, tmpfile)
@@ -119,9 +119,9 @@ func TestLoadConfigFromFileFailedValidation(t *testing.T) {
 
 	yamlTestConf := yamlMarshal(t, testConf)
 
-	tmpfile := createTmpFile(t, "*.yaml")
+	service.AppFs = afero.NewMemMapFs()
 
-	defer os.Remove(tmpfile.Name())
+	tmpfile := createTmpFile(t, service.AppFs, "*.yaml")
 
 	writeToTmpFile(t, tmpfile, yamlTestConf)
 	closeTmpFile(t, tmpfile)
@@ -178,9 +178,9 @@ func TestLoadConfigFromFile(t *testing.T) {
 
 	yamlTestConf := yamlMarshal(t, testConf)
 
-	tmpfile := createTmpFile(t, "*.yaml")
+	service.AppFs = afero.NewMemMapFs()
 
-	defer os.Remove(tmpfile.Name())
+	tmpfile := createTmpFile(t, service.AppFs, "*.yaml")
 
 	writeToTmpFile(t, tmpfile, yamlTestConf)
 	closeTmpFile(t, tmpfile)
@@ -253,9 +253,9 @@ func TestLoadConfigFromFile_OneService(t *testing.T) {
 
 	yamlTestConf := yamlMarshal(t, testConf)
 
-	tmpfile := createTmpFile(t, "*.yaml")
+	service.AppFs = afero.NewMemMapFs()
 
-	defer os.Remove(tmpfile.Name())
+	tmpfile := createTmpFile(t, service.AppFs, "*.yaml")
 
 	writeToTmpFile(t, tmpfile, yamlTestConf)
 	closeTmpFile(t, tmpfile)

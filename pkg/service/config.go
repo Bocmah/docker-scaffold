@@ -2,11 +2,14 @@ package service
 
 import (
 	"fmt"
-	"io/ioutil"
 	"path/filepath"
+
+	"github.com/spf13/afero"
 
 	"gopkg.in/yaml.v2"
 )
+
+var AppFs = afero.NewMemMapFs()
 
 // Config is interface for configs
 type Config interface {
@@ -94,7 +97,7 @@ func (c *FullConfig) GetOutputPath() string {
 
 // LoadConfigFromFile reads file at filepath, validates data and transforms it into FullConfig
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
-	data, err := ioutil.ReadFile(filepath)
+	data, err := afero.ReadFile(AppFs, filepath)
 	if err != nil {
 		return nil, fmt.Errorf("read config: %s", err)
 	}
