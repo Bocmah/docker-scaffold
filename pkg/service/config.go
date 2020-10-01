@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// AppFs is the filesystem in use
 var AppFs = afero.NewMemMapFs()
 
 // Config is interface for configs
