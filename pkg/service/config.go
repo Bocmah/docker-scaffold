@@ -10,7 +10,7 @@ import (
 )
 
 // AppFs is the filesystem in use
-var AppFs = afero.NewMemMapFs()
+var AppFs = afero.NewOsFs()
 
 // Config is interface for configs
 type Config interface {
