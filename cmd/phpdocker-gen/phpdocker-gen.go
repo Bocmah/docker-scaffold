@@ -12,25 +12,16 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
-func main() {
-	file := flag.String("file", "", "File with services configuration")
+func generateDocker(conf *Config) {
+	checkFileWithConfigurationExists(conf.file)
 
-	flag.Parse()
+	serviceConf := loadConfig(conf.file)
 
-	if *file == "" {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
+	renderServices(serviceConf)
 
-	checkFileWithConfigurationExists(*file)
+	composeConf := assemble.DockerCompose(serviceConf)
 
-	conf := loadConfig(*file)
-
-	renderServices(conf)
-
-	composeConf := assemble.DockerCompose(conf)
-
-	renderDockerCompose(composeConf, conf.GetOutputPath())
+	renderDockerCompose(composeConf, serviceConf.GetOutputPath())
 }
 
 func checkFileWithConfigurationExists(filepath string) {
@@ -76,4 +67,19 @@ func checkErr(err error) {
 func printAndExit(msg string) {
 	fmt.Println(msg)
 	os.Exit(1)
+}
+
+func main() {
+	flagConf, output, err := parseFlags(os.Args[0], os.Args[1:])
+
+	if err == flag.ErrHelp {
+		fmt.Println(output)
+		os.Exit(2)
+	} else if err != nil {
+		fmt.Println("got error:", err)
+		fmt.Println("output:\n", output)
+		os.Exit(1)
+	}
+
+	generateDocker(flagConf)
 }
