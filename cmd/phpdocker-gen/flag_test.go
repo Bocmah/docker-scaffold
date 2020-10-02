@@ -44,3 +44,30 @@ func TestParseFlagsCorrect(t *testing.T) {
 		})
 	}
 }
+
+func TestParseFlagsError(t *testing.T) {
+	var tests = []struct {
+		args   []string
+		errstr string
+	}{
+		{[]string{"-file"}, "flag needs an argument"},
+	}
+
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
+			conf, output, err := parseFlags("test", tt.args)
+			if conf != nil {
+				t.Errorf("conf got %v, want nil", conf)
+			}
+			if err == nil {
+				t.Fatalf("err got nil, want %q", tt.errstr)
+			}
+			if strings.Index(err.Error(), tt.errstr) < 0 {
+				t.Errorf("err got %q, want to find %q", err.Error(), tt.errstr)
+			}
+			if strings.Index(output, "Usage of test") < 0 {
+				t.Errorf("output got %q", output)
+			}
+		})
+	}
+}
