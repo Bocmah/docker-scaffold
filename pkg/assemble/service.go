@@ -44,7 +44,7 @@ func phpAssembler() ServiceAssembler {
 		appName := formatAppName(conf.AppName)
 
 		s := dockercompose.Service{
-			Name:          appName,
+			Name:          "php-fpm",
 			ContainerName: appName,
 			Restart:       dockercompose.RestartPolicyUnlessStopped,
 			WorkingDir:    workDir,

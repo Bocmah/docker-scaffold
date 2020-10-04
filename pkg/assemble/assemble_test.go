@@ -17,7 +17,7 @@ func TestDockerCompose(t *testing.T) {
 		Version: "3.8",
 		Services: []*dockercompose.Service{
 			{
-				Name:          "test-app",
+				Name:          "php-fpm",
 				Build:         &dockercompose.Build{Context: "/home/test/app", Dockerfile: "/home/test/app/.docker/php/Dockerfile"},
 				Image:         &dockercompose.Image{Name: "test-app"},
 				ContainerName: "test-app",

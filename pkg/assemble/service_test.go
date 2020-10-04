@@ -78,7 +78,7 @@ func TestPhpAssemble(t *testing.T) {
 	}{
 		"no options": {
 			want: &dockercompose.Service{
-				Name: "test-app",
+				Name: "php-fpm",
 				Image: &dockercompose.Image{
 					Name: "php",
 					Tag:  fmt.Sprintf("%s-fpm", conf.Services.PHP.Version),
@@ -99,7 +99,7 @@ func TestPhpAssemble(t *testing.T) {
 				}),
 			},
 			want: &dockercompose.Service{
-				Name: "test-app",
+				Name: "php-fpm",
 				Build: &dockercompose.Build{
 					Context:    "/home/test/app",
 					Dockerfile: "/home/test/app/.docker/php/Dockerfile",
