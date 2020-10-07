@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
+
+	"github.com/spf13/afero"
 
 	"github.com/Bocmah/phpdocker-gen/internal/dockercompose"
 
@@ -11,6 +14,8 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/render"
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
+
+var AppFs = afero.NewOsFs()
 
 func generateDocker(conf *Config) {
 	checkFileWithConfigurationExists(conf.file)
@@ -21,11 +26,11 @@ func generateDocker(conf *Config) {
 
 	composeConf := assemble.DockerCompose(serviceConf)
 
-	renderDockerCompose(composeConf, serviceConf.GetOutputPath())
+	renderDockerCompose(composeConf, filepath.Join(serviceConf.GetOutputPath(), "docker-compose.yml"))
 }
 
 func checkFileWithConfigurationExists(filepath string) {
-	if _, statErr := os.Stat(filepath); os.IsNotExist(statErr) {
+	if _, statErr := AppFs.Stat(filepath); os.IsNotExist(statErr) {
 		printAndExit("Provided file with configuration was not found")
 	}
 }
