@@ -30,7 +30,9 @@ type FullConfig struct {
 
 // FillDefaultsIfNotSet fills default parameters (if they are not present) for all services in the config
 func (c *FullConfig) FillDefaultsIfNotSet() {
-	c.Services.FillDefaultsIfNotSet()
+	if c.Services != nil {
+		c.Services.FillDefaultsIfNotSet()
+	}
 }
 
 // Validate validates all service parameters in the config
@@ -45,13 +47,19 @@ func (c *FullConfig) Validate() error {
 		errors.Add("Project root is required")
 	}
 
-	errs := c.Services.Validate()
+	if c.Services == nil || c.Services.PresentServicesCount() == 0 {
+		errors.Add("At least one service is required")
+	}
 
-	if errs != nil {
-		if e, ok := errs.(*ValidationErrors); ok {
-			errors.Merge(e)
-		} else {
-			errors.Add(errs.Error())
+	if c.Services != nil {
+		errs := c.Services.Validate()
+
+		if errs != nil {
+			if e, ok := errs.(*ValidationErrors); ok {
+				errors.Merge(e)
+			} else {
+				errors.Add(errs.Error())
+			}
 		}
 	}
 

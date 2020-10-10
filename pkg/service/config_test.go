@@ -328,53 +328,80 @@ func TestFullConfigValid_Validate(t *testing.T) {
 }
 
 func TestFullConfigInvalid_Validate(t *testing.T) {
-	conf := &service.FullConfig{
-		OutputPath: "/home/user/output",
-		Services: &service.ServicesConfig{
-			PHP: &service.PHPConfig{
-				Version:    "7.4",
-				Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
-			},
-			Nginx: &service.NginxConfig{
-				HTTPPort:   80,
-				HTTPSPort:  443,
-				ServerName: "test-server",
-				FastCGI: &service.FastCGI{
-					PassPort:           9000,
-					ReadTimeoutSeconds: 60,
+	tests := map[string]struct {
+		conf         *service.FullConfig
+		expectedErrs []string
+	}{
+		"without app name and project root": {
+			conf: &service.FullConfig{
+				OutputPath: "/home/user/output",
+				Services: &service.ServicesConfig{
+					PHP: &service.PHPConfig{
+						Version:    "7.4",
+						Extensions: []string{"mbstring", "zip", "exif", "pcntl", "gd", "pdo_mysql"},
+					},
+					Nginx: &service.NginxConfig{
+						HTTPPort:   80,
+						HTTPSPort:  443,
+						ServerName: "test-server",
+						FastCGI: &service.FastCGI{
+							PassPort:           9000,
+							ReadTimeoutSeconds: 60,
+						},
+					},
+					NodeJS: &service.NodeJSConfig{
+						Version: "10",
+					},
+					Database: &service.DatabaseConfig{
+						System:  service.MySQL,
+						Version: "5.7",
+						Name:    "test-db",
+						Port:    3306,
+						Credentials: service.Credentials{
+							Username:     "bocmah",
+							Password:     "test",
+							RootPassword: "testRoot",
+						},
+					},
 				},
 			},
-			NodeJS: &service.NodeJSConfig{
-				Version: "10",
+			expectedErrs: []string{"App name is required", "Project root is required"},
+		},
+		"Services is set but it is empty": {
+			conf: &service.FullConfig{
+				AppName:     "phpdocker-gen",
+				ProjectRoot: "/home/user/projects/test",
+				OutputPath:  "/home/user/output",
+				Services:    &service.ServicesConfig{},
 			},
-			Database: &service.DatabaseConfig{
-				System:  service.MySQL,
-				Version: "5.7",
-				Name:    "test-db",
-				Port:    3306,
-				Credentials: service.Credentials{
-					Username:     "bocmah",
-					Password:     "test",
-					RootPassword: "testRoot",
-				},
+			expectedErrs: []string{"At least one service is required"},
+		},
+		"Services is not set": {
+			conf: &service.FullConfig{
+				AppName:     "phpdocker-gen",
+				ProjectRoot: "/home/user/projects/test",
+				OutputPath:  "/home/user/output",
 			},
+			expectedErrs: []string{"At least one service is required"},
 		},
 	}
 
-	validationErr := conf.Validate()
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			validationErr := tc.conf.Validate()
 
-	if validationErr == nil {
-		t.Fatalf("Encountered nil validation error on invalid config: %s", validationErr)
-	}
+			if validationErr == nil {
+				t.Fatalf("Encountered nil validation error on invalid config: %s", validationErr)
+			}
 
-	stringErr := validationErr.Error()
+			stringErr := validationErr.Error()
 
-	expectedErrs := []string{"App name is required", "Project root is required"}
-
-	for _, expectedErr := range expectedErrs {
-		if !strings.Contains(stringErr, expectedErr) {
-			t.Fatalf("validation err %s does not contain expected err %s", stringErr, expectedErr)
-		}
+			for _, expectedErr := range tc.expectedErrs {
+				if !strings.Contains(stringErr, expectedErr) {
+					t.Fatalf("validation err %s does not contain expected err %s", stringErr, expectedErr)
+				}
+			}
+		})
 	}
 }
 
