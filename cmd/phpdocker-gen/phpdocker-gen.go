@@ -37,7 +37,14 @@ func checkFileWithConfigurationExists(filepath string) {
 
 func loadConfig(filepath string) *service.FullConfig {
 	conf, loadConfigErr := service.LoadConfigFromFile(filepath)
-	checkErr(loadConfigErr)
+
+	if loadConfigErr != nil {
+		if _, ok := loadConfigErr.(*service.ValidationErrors); ok {
+			printAndExit(fmt.Sprintf("File contains errors:\n\n%v", loadConfigErr))
+		} else {
+			printAndExit(fmt.Sprintf("Encountered error while loading config file:\n\n%v", loadConfigErr))
+		}
+	}
 
 	return conf
 }
