@@ -132,8 +132,8 @@ func TestLoadConfigFromFileFailedValidation(t *testing.T) {
 		t.Fatalf("encountered nil err when loading config with failed validation")
 	}
 
-	if !strings.Contains(err.Error(), "validate config") {
-		t.Fatalf("incorrect err value: %s", err.Error())
+	if _, ok := err.(*service.ValidationErrors); !ok {
+		t.Fatalf("incorrect err value %v", err)
 	}
 }
 

@@ -106,20 +106,20 @@ func (c *FullConfig) GetOutputPath() string {
 
 // LoadConfigFromFile reads file at filepath, validates data and transforms it into FullConfig
 func LoadConfigFromFile(filepath string) (*FullConfig, error) {
-	data, err := afero.ReadFile(AppFs, filepath)
-	if err != nil {
-		return nil, fmt.Errorf("read config: %s", err)
+	data, readFileErr := afero.ReadFile(AppFs, filepath)
+	if readFileErr != nil {
+		return nil, fmt.Errorf("read config: %s", readFileErr)
 	}
 
 	conf := &FullConfig{}
 
-	if err := yaml.Unmarshal(data, conf); err != nil {
-		return nil, fmt.Errorf("parse config: %s", err)
+	if unmarshallErr := yaml.Unmarshal(data, conf); unmarshallErr != nil {
+		return nil, fmt.Errorf("parse config: %s", unmarshallErr)
 	}
 
 	conf.FillDefaultsIfNotSet()
-	if err := conf.Validate(); err != nil {
-		return nil, fmt.Errorf("validate config: %s", err)
+	if validateErr := conf.Validate(); validateErr != nil {
+		return nil, validateErr
 	}
 
 	return conf, nil
