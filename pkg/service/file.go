@@ -43,7 +43,7 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 			{
 				Type:         Dockerfile,
 				PathOnHost:   filepath.Join(outputPath, "php/Dockerfile"),
-				TemplatePath: filepath.Join("../../tmpl", "php/php.dockerfile.gotmpl"),
+				TemplatePath: "/php/php.dockerfile.gotmpl",
 			},
 		}
 	case Nginx:
@@ -52,7 +52,7 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 				Type:            ConfigFile,
 				PathOnHost:      filepath.Join(outputPath, "nginx/conf.d/app.conf"),
 				PathInContainer: "/etc/nginx/conf.d/app.conf",
-				TemplatePath:    filepath.Join("../../tmpl", "nginx/conf.gotmpl"),
+				TemplatePath:    "/nginx/conf.gotmpl",
 			},
 		}
 	case NodeJS:
@@ -60,7 +60,7 @@ func getFilesForService(service SupportedService, outputPath string) []*File {
 			{
 				Type:         Dockerfile,
 				PathOnHost:   filepath.Join(outputPath, "nodejs/Dockerfile"),
-				TemplatePath: filepath.Join("../../tmpl", "nodejs/nodejs.dockerfile.gotmpl"),
+				TemplatePath: "/nodejs/nodejs.dockerfile.gotmpl",
 			},
 		}
 	default:

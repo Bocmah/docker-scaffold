@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"text/template"
 
+	"github.com/Bocmah/phpdocker-gen/internal/box"
+
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
@@ -20,11 +22,9 @@ type RenderableFile interface {
 func render(renderable RenderableFile, conf *service.FullConfig) (*Rendered, error) {
 	rendered := &Rendered{}
 
-	tmpl, parseErr := template.ParseFiles(renderable.GetTemplatePath())
+	tmpl := string(box.Get(renderable.GetTemplatePath()))
 
-	if parseErr != nil {
-		return nil, fmt.Errorf("parse render: %s", parseErr)
-	}
+	parsedTmpl := template.Must(template.New("").Parse(tmpl))
 
 	outputDir := filepath.Dir(renderable.GetOutputPath())
 
@@ -44,7 +44,7 @@ func render(renderable RenderableFile, conf *service.FullConfig) (*Rendered, err
 
 	defer file.Close()
 
-	if executeErr := tmpl.Execute(file, conf); executeErr != nil {
+	if executeErr := parsedTmpl.Execute(file, conf); executeErr != nil {
 		return nil, fmt.Errorf("execute render: %s", executeErr)
 	}
 
