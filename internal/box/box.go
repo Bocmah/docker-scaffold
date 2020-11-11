@@ -24,10 +24,12 @@ func (e *embedBox) Get(file string) []byte {
 
 var box = newEmbedBox()
 
+// Add adds file contents to the box
 func Add(file string, content []byte) {
 	box.Add(file, content)
 }
 
+// Get gets file contents from the box
 func Get(file string) []byte {
 	return box.Get(file)
 }

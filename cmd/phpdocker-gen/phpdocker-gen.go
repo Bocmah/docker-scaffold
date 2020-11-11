@@ -15,6 +15,7 @@ import (
 	"github.com/Bocmah/phpdocker-gen/pkg/service"
 )
 
+// AppFs is a filesystem in use
 var AppFs = afero.NewOsFs()
 
 func generateDocker(conf *Config) {

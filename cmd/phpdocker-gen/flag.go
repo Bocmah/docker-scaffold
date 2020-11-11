@@ -5,6 +5,7 @@ import (
 	"flag"
 )
 
+// Config represents command line parameters
 type Config struct {
 	file string
 	args []string
