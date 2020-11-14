@@ -448,7 +448,7 @@ func TestFullConfig_GetServiceFiles(t *testing.T) {
 			{
 				Type:         service.Dockerfile,
 				PathOnHost:   filepath.Join(outputPath, "php/Dockerfile"),
-				TemplatePath: filepath.Join("../../tmpl", "php/php.dockerfile.gotmpl"),
+				TemplatePath: "/php/php.dockerfile.gotmpl",
 			},
 		},
 		service.Nginx: []*service.File{
@@ -456,14 +456,14 @@ func TestFullConfig_GetServiceFiles(t *testing.T) {
 				Type:            service.ConfigFile,
 				PathOnHost:      filepath.Join(outputPath, "nginx/conf.d/app.conf"),
 				PathInContainer: "/etc/nginx/conf.d/app.conf",
-				TemplatePath:    filepath.Join("../../tmpl", "nginx/conf.gotmpl"),
+				TemplatePath:    "/nginx/conf.gotmpl",
 			},
 		},
 		service.NodeJS: []*service.File{
 			{
 				Type:         service.Dockerfile,
 				PathOnHost:   filepath.Join(outputPath, "nodejs/Dockerfile"),
-				TemplatePath: filepath.Join("../../tmpl", "nodejs/nodejs.dockerfile.gotmpl"),
+				TemplatePath: "/nodejs/nodejs.dockerfile.gotmpl",
 			},
 		},
 	}
