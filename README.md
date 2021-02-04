@@ -108,7 +108,54 @@ database:
   version: 5.7
   name: test-db
   port: 3306
-  username: cooluser
+  username: joe
   password: test
   rootPassword: testRoot
 ```
+
+## Full example file
+
+```yaml
+appName: awesome-app
+projectRoot: /home/user/joe/projects/awesome-app
+outputPath: /home/user/joe/projects/awesome-app/docker-config
+services:
+  php:
+    version: 7.4
+    extensions:
+      - redis
+      - xdebug
+  nginx:
+    httpPort: 81
+    serverName: 
+    fastCGI:
+      passPort: 9001
+      readTimeoutSeconds: 30
+  nodejs:
+    version: 10
+  database:
+    system: mysql
+    version: 5.7
+    name: test-db
+    port: 3306
+    username: bocmah
+    password: test
+    rootPassword: testRoot
+```
+
+Using the above file the tool will create a set of Docker configuration files inside
+```/home/user/joe/projects/awesome-app/docker-config```. Final configuration will consist of four docker containers:
+
+1. Php-fpm container with PHP 7.4
+2. Nginx container listening on ports 81 and 9001 for HTTP and HTTPS ports respectively.
+3. Container with Node.js v10.
+4. MySQL container.
+
+## Prerequisites
+
+To run the tool, you should have Go 1.15+ installed.
+You will also need Docker and Docker Compose for running output configuration.
+
+## Installation
+
+```go get -u github.com/Bocmah/phpdocker-gen/...```
