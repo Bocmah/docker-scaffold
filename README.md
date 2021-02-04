@@ -1,3 +1,114 @@
 [![Build Status](https://github.com/Bocmah/phpdocker-gen/workflows/main/badge.svg)](https://github.com/Bocmah/phpdocker-gen/actions)
 [![codecov](https://codecov.io/gh/Bocmah/phpdocker-gen/branch/master/graph/badge.svg)](https://codecov.io/gh/Bocmah/phpdocker-gen)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Bocmah/phpdocker-gen)](https://goreportcard.com/report/github.com/Bocmah/phpdocker-gen)
+
+# Docker config generator for PHP projects
+
+This tool abstracts away a tedious task of writing docker configuration files for PHP projects. It generates ready-to-use
+docker config from high-level YAML file.
+
+## The input YAML file
+This tool consumes a YAML file, which contains a description of services, which are needed for your PHP application and
+some information about your project. 
+
+At the top indentation level you should specify the `appName` key which is the name
+of your application and basically can be anything, the root of your project `projectRoot` and optionally `outputPath` which
+is the folder where resulting configuration will be stored. If `outputPath` is not specified, the resulting configuration
+will be rendered in `.docker` folder inside `projectRoot`.
+
+```yaml
+appName: awesome-app
+projectRoot: /home/user/projects/awesome-project
+outputPath: /home/user/awesome-project/custom-folder
+```
+
+You should also specify a list of services `services`, which will be discussed in the section below.
+
+## Services
+Services list is the core of the input YAML file. Each service you describe will be mapped to a single docker container.
+
+Currently supported services:
+
+```php``` - maps to a container with php-fpm.
+
+Keys:
+
+| Name       | Type    | Required | Default value                    | Description    |
+|------------|---------|----------|----------------------------------|----------------|
+| version    | numeric | no       | 7.4                              | PHP version    |
+| extensions | list    | no       | [mbstring, zip, exif, pcntl, gd] | PHP extensions |
+
+**Note**: ```extensions``` key is experimental. Not all extensions may install correctly.
+
+Example:
+
+```yaml
+php:
+  version: 7.4
+  extensions:
+    - redis
+    - xdebug
+```
+
+```nginx``` - maps to a container with nginx.
+
+Keys:
+
+| Name                       | Type    | Required | Default value | Description                                                                                              |
+|----------------------------|---------|----------|---------------|----------------------------------------------------------------------------------------------------------|
+| httpPort                   | integer | no       | 80            | nginx will use this port for listening for HTTP requests                                                 |
+| httpsPort                  | integer | no       | 443           | nginx will use this port for listening for HTTPS requests                                                |
+| serverName                 | string  | yes      | -             | The hostname. The app will be navigable through the web using the value of server name followed by .test |
+| fastCGI.passPort           | integer | no       | 9000          | This port will be used for connecting nginx and php-fpm                                                  |
+| fastCGI.readTimeoutSeconds | integer | no       | 60            | How long nginx will wait for response from php-fpm before timing out with 504 error                      |
+
+```yaml
+nginx:
+  httpPort: 81
+  serverName: awesome-app
+  fastCGI:
+    passPort: 9001
+    readTimeoutSeconds: 30
+```
+
+```nodejs``` - maps to a container with Node.js.
+
+Keys:
+
+| Name    | Type                | Required | Default value | Description     |
+|---------|---------------------|----------|---------------|-----------------|
+| version | numeric&#124;string | no       | latest        | Node.js version |
+
+Example:
+
+```yaml
+nodejs:
+  version: 10
+```
+
+```database``` - maps to a container with database.
+
+Keys:
+
+| Name         | Type                        | Required                      | Default value                                  | Description                                                                                                          |
+|--------------|-----------------------------|-------------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| system       | enum(mysql&#124;postgresql) | yes                           | -                                              | Database system in use                                                                                               |
+| version      | numeric                     | no                            | 8.0 for ```mysql``` 12.3 for ```postgresql```  | Database version                                                                                                     |
+| name         | string                      | no                            | -                                              | If specified, database with ```name``` will be created on image startup                                              |
+| port         | integer                     | no                            | 3306 for ```mysql``` 5432 for ```postgresql``` | Database port                                                                                                        |
+| username     | string                      | no                            | -                                              | If specified, user with ```username``` will be created with superuser power                                          |
+| password     | string                      | required for ```postgresql``` | -                                              | Sets the superuser password if system in use is ```postgresql``` or a password for username if system is ```mysql``` |
+| rootPassword | string                      | required for ```mysql```      | -                                              | Sets the superuser password if system in use is ```mysql```                                                          |
+
+Example:
+
+```yaml
+database:
+  system: mysql
+  version: 5.7
+  name: test-db
+  port: 3306
+  username: cooluser
+  password: test
+  rootPassword: testRoot
+```
