@@ -113,6 +113,13 @@ database:
   rootPassword: testRoot
 ```
 
+Sometimes you may wish to use as service but all keys are optional, and you want to leave default values. In this
+case you should specify a service as an empty object:
+
+```yaml
+nodejs: {}
+```
+
 ## Full example file
 
 ```yaml
