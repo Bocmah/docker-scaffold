@@ -18,10 +18,25 @@ import (
 // AppFs is a filesystem in use
 var AppFs = afero.NewOsFs()
 
-func generateDocker(conf *Config) {
-	checkFileWithConfigurationExists(conf.file)
+func resolveConfigPath(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
 
-	serviceConf := loadConfig(conf.file)
+	wd, err := os.Getwd()
+	if err != nil {
+		printAndExit("Failed to get current working directory")
+	}
+
+	return filepath.Join(wd, path)
+}
+
+func generateDocker(conf *Config) {
+	configPath := resolveConfigPath(conf.file)
+
+	checkFileWithConfigurationExists(configPath)
+
+	serviceConf := loadConfig(configPath)
 
 	renderServices(serviceConf)
 
