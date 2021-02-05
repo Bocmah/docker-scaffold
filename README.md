@@ -113,7 +113,7 @@ database:
   rootPassword: testRoot
 ```
 
-Sometimes you may wish to use as service but all keys are optional, and you want to leave default values. In this
+Sometimes you may wish to use a service but all keys are optional, and you want to leave default values. In this
 case you should specify a service as an empty object:
 
 ```yaml
@@ -165,4 +165,18 @@ You will also need Docker and Docker Compose for running output configuration.
 
 ## Installation
 
-```go get -u github.com/Bocmah/phpdocker-gen/...```
+The following command will download and install the code as a binary. 
+
+```$ go get github.com/Bocmah/phpdocker-gen/...```
+
+**Note**: The location of Go binaries depends on Go environment variables ```GOPATH``` and ```GOBIN```. If you want
+to use the binary without specifying its fullpath, you should export the location of Go binaries to your ```PATH```.
+If you've just installed Go and didn't make any changes to Go env variables this command should work:
+
+```$ export PATH=$PATH:$(go env GOPATH)/bin```
+
+## Usage
+
+```$ phpdocker-gen -file <path_to_input_file>```
+
+You can use either an absolute path to input file or a path relative to current working directory.
