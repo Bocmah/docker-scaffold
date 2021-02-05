@@ -11,10 +11,15 @@ docker config from high-level YAML file.
 This tool consumes a YAML file, which contains a description of services, which are needed for your PHP application and
 some information about your project. 
 
-At the top indentation level you should specify the `appName` key which is the name
-of your application and basically can be anything, the root of your project `projectRoot` and optionally `outputPath` which
-is the folder where resulting configuration will be stored. If `outputPath` is not specified, the resulting configuration
-will be rendered in `.docker` folder inside `projectRoot`.
+The following variables can/should be specified at the top indentation level:
+
+| Name        | Type   | Required | Default value                                 | Description                                                  |
+|-------------|--------|----------|-----------------------------------------------|--------------------------------------------------------------|
+| appName     | string | yes      | -                                             | The name of your application. Can be anything.               |
+| projectRoot | string | yes      | -                                             | Path to your project root.                                   |
+| outputPath  | string | no       | ```.docker``` folder inside ```projectRoot``` | Path to folder where resulting configuration will be stored. |
+
+Example:
 
 ```yaml
 appName: awesome-app
