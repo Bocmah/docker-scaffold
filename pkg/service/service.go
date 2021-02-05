@@ -53,12 +53,11 @@ func (s *ServicesConfig) FillDefaultsIfNotSet() {
 	}
 
 	if s.PHP != nil {
+		s.PHP.FillDefaultsIfNotSet()
+
 		if s.Database != nil {
 			s.PHP.AddDatabaseExtension(s.Database.System)
-
 		}
-
-		s.PHP.FillDefaultsIfNotSet()
 	}
 
 	if s.NodeJS != nil {
