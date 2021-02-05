@@ -1,5 +1,5 @@
 {{- /*gotype: github.com/Bocmah/phpdocker-gen/pkg/service.FullConfig*/ -}}
-FROM php:{{.Services.PHP.Version}}-fpm-alpine
+FROM php:{{.Services.PHP.Version}}-fpm
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
